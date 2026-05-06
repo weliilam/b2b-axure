@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.cache/
+logs/
+*.log
+.env
+.env.local
+.vite/
+.axhub/
+**/*.spec.ts
+**/*.spec.tsx
+**/*.test.ts
+**/*.test.tsx
+*.d.ts

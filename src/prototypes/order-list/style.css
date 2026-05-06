@@ -1,0 +1,214 @@
+/* B2B订单列表 - antd 组件样式微调 */
+
+.b2b-order-list-page {
+  padding: 16px 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 自定义蓝色主题 */
+.b2b-order-list-page .ant-btn-primary {
+  background-color: #1D4CD2 !important;
+  border-color: #1D4CD2 !important;
+}
+
+.b2b-order-list-page .ant-btn-primary:hover {
+  background-color: #1640B0 !important;
+  border-color: #1640B0 !important;
+}
+
+.b2b-order-list-page .ant-btn-dangerous.ant-btn-primary {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+}
+
+.page-header {
+  margin-bottom: 12px;
+}
+
+.page-body {
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* ===== 查询区 ===== */
+.query-bar {
+  padding: 12px 16px 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.filter-group {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.fl-label {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* 日期选择行（横向排列） */
+.date-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 200px;
+}
+
+.date-wrap .ant-picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-sep {
+  margin: 0 2px;
+  color: #999;
+  flex-shrink: 0;
+}
+
+/* antd Select/DatePicker/Input 在 flex 中占满宽度 */
+.filter-group .ant-select,
+.filter-group .ant-picker,
+.filter-group .ant-input-affix-wrapper {
+  width: 100% !important;
+  min-width: 80px;
+}
+
+.input-addon-group {
+  display: flex;
+  width: 100%;
+  min-width: 120px;
+}
+
+.native-input {
+  flex: 1;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #d9d9d9;
+  border-right: none;
+  font-size: 12px;
+  color: #333;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 4px 0 0 4px;
+  min-width: 0;
+}
+
+/* 没有输入框组合时，用常规圆角 */
+.filter-group > .native-input:only-child {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+}
+
+.native-input:focus {
+  border-color: #1890ff;
+}
+
+.native-input::placeholder {
+  color: #bfbfbf;
+}
+
+.addon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.addon-btn:hover {
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.query-footer {
+  text-align: right;
+  margin-top: 2px;
+  padding-bottom: 2px;
+}
+
+/* ===== 工具栏 ===== */
+.toolbar {
+  padding: 8px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== 表格操作列链接 ===== */
+.table-action-link {
+  color: #1D4CD2;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.table-action-link:hover {
+  color: #1640B0;
+  text-decoration: underline;
+}
+
+.table-action-divider {
+  color: #d9d9d9;
+  margin: 0 2px;
+}
+
+/* ===== 表格 ===== */
+.table-wrapper-custom {
+  padding: 0;
+}
+
+/* 操作列链接 */
+.table-wrapper-custom .ant-table-cell .ant-space-item a {
+  color: #1D4CD2;
+  font-size: 12px;
+}
+
+.table-wrapper-custom .ant-table-cell .ant-space-item a:hover {
+  color: #1640B0;
+}
+
+/* 表格单元格内文字对齐 */
+.table-wrapper-custom .ant-table-thead > tr > th:last-child,
+.table-wrapper-custom .ant-table-tbody > tr > td:last-child {
+  text-align: center !important;
+}

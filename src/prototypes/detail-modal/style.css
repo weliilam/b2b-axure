@@ -1,0 +1,141 @@
+@import "tailwindcss";
+@import "../../styles/modal-shared.css";
+
+/* B2B详情弹框 - 页面特有样式 */
+
+.detail-modal-page {
+  padding: 16px 24px;
+  background: rgb(242, 242, 242);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+.page-body {
+  flex: 1;
+}
+
+/* 覆盖 modal-shared.css 中 b2b-detail-modal body 为生产环境一致 */
+.b2b-detail-modal .ant-modal-body {
+  padding: 30px;
+  height: 710px;
+  overflow: hidden auto;
+}
+
+/* ===== 4列详情网格 ===== */
+.detail-grid-4col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  /* 46px = antd Row/Col 默认 padding (23px) × 2 */
+  gap: 0 46px;
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  min-height: 44px;
+  justify-content: flex-start;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.4;
+}
+
+.detail-value {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+/* ===== 备注输入行 ===== */
+.detail-remark-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.detail-remark-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-remark-input {
+  height: 32px;
+  border-radius: 4px;
+}
+
+/* ===== 申报信息 ===== */
+.declaration-section {
+  margin-bottom: 8px;
+}
+
+.declaration-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e8eaec;
+  border-radius: 4px;
+}
+
+.declaration-table {
+  min-width: 100%;
+}
+
+.declaration-table .ant-table-thead > tr > th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 8px;
+  white-space: nowrap;
+  border-bottom: 1px solid #e8eaec;
+}
+
+.declaration-table .ant-table-tbody > tr > td {
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #606266;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.declaration-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+.declaration-table .ant-table-tbody > tr:hover > td {
+  background: #f5f7fa;
+}
+
+/* 展开行内部的商品明细表格 */
+.expanded-product-wrap {
+  padding: 8px 0 8px 32px;
+}
+
+.declaration-table-inner {
+  border: 1px solid #e8eaec;
+  border-radius: 4px;
+}
+
+.declaration-table-inner .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-size: 12px;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.declaration-table-inner .ant-table-tbody > tr > td {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+/* 底部按钮（共享：modal-shared.css 中的 .detail-confirm-btn / .detail-cancel-btn） */

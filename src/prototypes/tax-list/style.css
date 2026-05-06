@@ -1,0 +1,233 @@
+@import "tailwindcss";
+@import "../../styles/modal-shared.css";
+
+/* B2B税号管理列表 - 页面样式 */
+
+.tax-list-page {
+  padding: 16px 24px;
+  background: #f2f3f5;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+/* ===== 标题栏 ===== */
+.page-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+  margin: 0;
+}
+
+/* ===== 筛选区 ===== */
+.query-bar {
+  background: #fff;
+  border-radius: 4px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.filter-group {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.fl-label {
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.filter-date-wrap {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.filter-date-wrap .ant-picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-sep {
+  margin: 0 2px;
+  color: #909399;
+  flex-shrink: 0;
+  align-self: auto;
+}
+
+.query-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.expand-btn {
+  font-size: 12px;
+  padding: 0;
+  color: #1D4CD2;
+}
+
+.query-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.query-buttons .ant-btn-primary {
+  background-color: #1D4CD2;
+  border-color: #1D4CD2;
+}
+
+/* ===== 工具栏 ===== */
+.toolbar {
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-right {
+  font-size: 13px;
+  color: #606266;
+}
+
+.toolbar .ant-btn-primary {
+  background-color: #1D4CD2;
+  border-color: #1D4CD2;
+}
+
+/* ===== 表格 ===== */
+.table-wrapper {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.table-wrapper .ant-table-thead > tr > th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid #e8eaec;
+  padding: 10px 8px;
+  white-space: nowrap;
+}
+
+.table-wrapper .ant-table-tbody > tr > td {
+  padding: 9px 8px;
+  font-size: 13px;
+  color: #606266;
+  border-bottom: 1px solid #e8eaec;
+}
+
+.table-wrapper .ant-table-tbody > tr:hover > td {
+  background: #f5f7fa;
+}
+
+.table-wrapper .ant-table-tbody > tr:nth-child(even) > td {
+  background: #fafafa;
+}
+
+.table-wrapper .ant-table-tbody > tr:nth-child(even):hover > td {
+  background: #f5f7fa;
+}
+
+/* ===== 操作链接 ===== */
+.action-links {
+  white-space: nowrap;
+}
+
+.action-link {
+  color: #1D4CD2;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.action-link:hover {
+  color: #173da8;
+  text-decoration: underline;
+}
+
+.action-divider {
+  color: #dcdfe6;
+  margin: 0 6px;
+}
+
+.action-divider-more {
+  margin-left: 10px;
+}
+
+/* ===== 更多操作三竖点按钮 ===== */
+.more-actions-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #909399;
+  transition: all 0.2s;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.more-actions-trigger:hover {
+  background: #f0f2f5;
+  color: #1D4CD2;
+}
+
+/* ===== 分页 ===== */
+.table-wrapper .ant-pagination {
+  padding: 12px 16px;
+  margin: 0;
+}
+
+.total-text {
+  font-size: 13px;
+  color: #909399;
+}
+
+/* antd 控件在 flex 中填满宽度 */
+.filter-group .ant-select,
+.filter-group .ant-picker,
+.filter-group .ant-input-affix-wrapper {
+  width: 100% !important;
+  min-width: 80px;
+}
+
+/* ===== 编辑弹框（共享：已从 modal-shared.css 引入） ===== */
