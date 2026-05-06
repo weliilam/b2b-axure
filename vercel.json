@@ -1,6 +1,5 @@
 {
-  "buildCommand": "node scripts/vercel-build.mjs",
+  "buildCommand": "npx vite build",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null
 }
