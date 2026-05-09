@@ -35,6 +35,14 @@
   margin-bottom: 20px;
 }
 
+/* 2列详情网格 */
+.detail-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 46px;
+  margin-bottom: 20px;
+}
+
 .detail-item {
   display: flex;
   flex-direction: column;
@@ -56,6 +64,8 @@
   line-height: 1.5;
   word-break: break-all;
 }
+
+
 
 /* ===== 备注输入行 ===== */
 .detail-remark-row {

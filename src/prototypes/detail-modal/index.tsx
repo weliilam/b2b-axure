@@ -134,6 +134,24 @@ const MOCK_DETAIL = {
   '邮箱': '',
 };
 
+// 交货信息模拟数据
+const MOCK_DELIVERY = {
+  '交货方式': '云途揽收',
+  '揽收地址': '******',
+  '揽收时间': '2026-05-06 10:00:00 - 2026-05-06 18:00:00',
+};
+
+const EXTRA_SERVICE_COLUMNS = [
+  { title: '序号', dataIndex: 'seq', key: 'seq', width: 50 },
+  { title: '附加服务', dataIndex: 'service', key: 'service', width: 240 },
+  { title: '附加服务值', dataIndex: 'serviceValue', key: 'serviceValue', width: 240 },
+  { title: '备注', dataIndex: 'remark', key: 'remark', width: 240 },
+];
+
+const EXTRA_SERVICE_DATA: { key: number; seq: number; service: string; serviceValue: string; remark: string }[] = [];
+
+
+
 // ============ 申报信息模拟数据 ============
 
 // 为每个子单生成商品明细
@@ -419,6 +437,55 @@ const Component = forwardRef(function DetailModal(
                 }}
               />
             </div>
+            <div className="detail-grid-4col" style={{ marginTop: 12, marginBottom: 0 }}>
+              {renderDetailItem('是否带电', detail['是否带电'] || '否')}
+              {renderDetailItem('是否带磁', detail['是否带磁'] || '否')}
+              {renderDetailItem('预报总重量(kg)', detail['预报总重量(kg)'] || '6')}
+            </div>
+          </div>
+
+          {/* 交货信息 */}
+          <div className="detail-section-title">交货信息</div>
+          <div className="detail-grid-4col">
+            {renderDetailItem('交货方式', detail['交货方式'] || MOCK_DELIVERY['交货方式'])}
+            {renderDetailItem('揽收地址', detail['揽收地址'] || MOCK_DELIVERY['揽收地址'])}
+            <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+              <span className="detail-label">揽收时间</span>
+              <span className="detail-value">{detail['揽收时间'] || MOCK_DELIVERY['揽收时间']}</span>
+            </div>
+          </div>
+
+          {/* 额外服务 */}
+          <div className="detail-section-title">额外服务</div>
+          <div className="declaration-table-wrap" style={{ marginBottom: 16 }}>
+            <Table
+              columns={EXTRA_SERVICE_COLUMNS}
+              dataSource={EXTRA_SERVICE_DATA}
+              pagination={false}
+              size="small"
+              scroll={{ x: 800 }}
+              rowKey="key"
+              className="declaration-table"
+            />
+          </div>
+
+          {/* 计费信息 */}
+          <div className="detail-section-title" style={{ marginTop: 16 }}>计费信息</div>
+          <div className="detail-grid-2col">
+            {renderDetailItem('速递运费', detail['速递运费'] || '1360 RMB')}
+            {renderDetailItem('非亚马逊地址费', detail['非亚马逊地址费'] || '17 RMB')}
+            {renderDetailItem('特殊品名附加费', detail['特殊品名附加费'] || '17 RMB')}
+            <div className="detail-item" style={{ gridColumn: '1 / -1', borderTop: '1px solid #e8e8e8', paddingTop: 8, marginTop: 4 }}>
+              <span className="detail-label" style={{ fontWeight: 600 }}>合计</span>
+              <span className="detail-value" style={{ fontWeight: 600 }}>{detail['合计'] || '1394 RMB'}</span>
+            </div>
+          </div>
+
+          {/* 排柜信息 */}
+          <div className="detail-section-title" style={{ marginTop: 16 }}>排柜信息</div>
+          <div className="detail-grid-4col">
+            {renderDetailItem('集装箱号', detail['集装箱号'] || '')}
+            {renderDetailItem('车头车牌', detail['车头车牌'] || '')}
           </div>
         </Modal>
       </div>
