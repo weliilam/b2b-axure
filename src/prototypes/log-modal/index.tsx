@@ -96,13 +96,15 @@ const MOCK_LOG_DATA: LogRecord[] = [
 
 // ============ 组件实现 ============
 
+const renderCell = (text: string) => text || '-';
+
 const LOG_COLUMNS = [
-  { title: '序号', dataIndex: 'seq', key: 'seq', width: 60 },
-  { title: '操作系统', dataIndex: 'os', key: 'os', width: 90 },
-  { title: '内部操作人', dataIndex: 'innerOperator', key: 'innerOperator', width: 140 },
-  { title: '外部操作人', dataIndex: 'outerOperator', key: 'outerOperator', width: 90 },
-  { title: '内容', dataIndex: 'content', key: 'content', ellipsis: true },
-  { title: '操作时间', dataIndex: 'operationTime', key: 'operationTime', width: 180 },
+  { title: '序号', dataIndex: 'seq', key: 'seq', width: 60, render: renderCell },
+  { title: '操作系统', dataIndex: 'os', key: 'os', width: 90, render: renderCell },
+  { title: '内部操作人', dataIndex: 'innerOperator', key: 'innerOperator', width: 140, render: renderCell },
+  { title: '外部操作人', dataIndex: 'outerOperator', key: 'outerOperator', width: 90, render: renderCell },
+  { title: '内容', dataIndex: 'content', key: 'content', ellipsis: true, render: renderCell },
+  { title: '操作时间', dataIndex: 'operationTime', key: 'operationTime', width: 180, render: renderCell },
 ];
 
 const Component = forwardRef(function LogModal(
