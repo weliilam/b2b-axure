@@ -1,0 +1,78 @@
+/* ===========================================
+ * B2B 日志记录弹框样式
+ * 引用共享样式：@import "../../styles/modal-shared.css"
+ * =========================================== */
+
+@import "tailwindcss";
+@import "../../styles/modal-shared.css";
+
+/* ---- 日志弹框容器 ---- */
+.b2b-log-modal {
+  top: 60px;
+}
+
+.b2b-log-modal .ant-modal-header {
+  border-bottom: 1px solid #e8e8e8;
+  padding: 16px 24px;
+  margin-bottom: 0;
+}
+
+.b2b-log-modal .ant-modal-body {
+  padding: 16px 24px;
+  max-height: 660px;
+  overflow-y: auto;
+}
+
+.b2b-log-modal .ant-modal-footer {
+  border-top: 1px solid #e8e8e8;
+  padding: 12px 24px;
+  text-align: right;
+}
+
+/* ---- 日志表格 ---- */
+.log-table-wrap {
+  width: 100%;
+}
+
+.log-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+}
+
+.log-table .ant-table-tbody > tr > td {
+  font-size: 13px;
+  color: #666;
+}
+
+.log-table .ant-table-tbody > tr:hover > td {
+  background: #f0f5ff;
+}
+
+/* ---- 底部按钮 ---- */
+.log-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.log-cancel-btn {
+  border: 1px solid rgb(217, 217, 217);
+  color: rgb(59, 59, 59);
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.log-cancel-btn:hover {
+  border-color: #1D4CD2;
+  color: #1D4CD2;
+}
+
+/* ---- 分页 ---- */
+.log-table .ant-pagination {
+  margin: 12px 0 0;
+}
