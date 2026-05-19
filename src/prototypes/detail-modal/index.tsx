@@ -70,7 +70,6 @@ const DATA_LIST: DataDesc[] = [
       { name: '客服员', desc: '客服员姓名（字符串）' },
       { name: '销售产品', desc: '销售产品名称（字符串）' },
       { name: '目的国家', desc: '目的国家（字符串）' },
-      { name: '清关方案', desc: '清关方案（字符串）' },
       { name: '是否报关件', desc: '是否报关件（字符串）' },
       { name: '报关方式', desc: '报关方式（字符串）' },
       { name: '入账状态', desc: '入账状态（字符串）' },
@@ -78,6 +77,25 @@ const DATA_LIST: DataDesc[] = [
       { name: '是否白名单', desc: '是否白名单（字符串）' },
       { name: '客户备注', desc: '客户备注（字符串）' },
       { name: '配载备注', desc: '配载备注（字符串）' },
+      // 清关信息
+      { name: '清关方案', desc: '清关方案（字符串）' },
+      { name: '税号/TAX ID', desc: '税号/TAX ID（字符串）' },
+      { name: 'EORI', desc: 'EORI（字符串）' },
+      { name: 'BOND有效期', desc: 'BOND有效期（字符串）' },
+      { name: '进口商公司名称', desc: '进口商公司名称（字符串）' },
+      { name: '进口商城市', desc: '进口商城市（字符串）' },
+      { name: '进口商地址', desc: '进口商地址（字符串）' },
+      { name: '进口商邮编', desc: '进口商邮编（字符串）' },
+      // 发件人信息
+      { name: '发件人公司名称', desc: '发件人公司名称（字符串）' },
+      { name: '发件人姓名', desc: '发件人姓名（字符串）' },
+      { name: '发件人详细地址', desc: '发件人详细地址含门牌号（字符串）' },
+      { name: '发件人城市', desc: '发件人城市（字符串）' },
+      { name: '发件人州/省', desc: '发件人州/省（字符串）' },
+      { name: '发件人国家', desc: '发件人国家（字符串）' },
+      { name: '发件人邮编', desc: '发件人邮编（字符串）' },
+      { name: '发件人电话/手机', desc: '发件人电话/手机（字符串）' },
+      { name: '发件人邮箱', desc: '发件人邮箱（字符串）' },
       // 收件人信息
       { name: '地址类型', desc: '地址类型（字符串）' },
       { name: '仓库代码', desc: '仓库代码（字符串）' },
@@ -112,7 +130,6 @@ const MOCK_DETAIL = {
   '客服员': '彭军',
   '销售产品': 'B2B测试拼柜',
   '目的国家': '美国',
-  '清关方案': 'DDU',
   '是否报关件': '是',
   '报关方式': '0110',
   '入账状态': '待入账',
@@ -120,6 +137,25 @@ const MOCK_DETAIL = {
   '是否白名单': '',
   '客户备注': '',
   '配载备注': '',
+  // 清关信息
+  '清关方案': 'PVA',
+  '税号/TAX ID': 'GB510321164',
+  'EORI': 'GB510321164000',
+  'BOND有效期': '2026-12-31',
+  '进口商公司名称': 'QINGDAOFUZHANSHANGMA',
+  '进口商城市': '深圳',
+  '进口商地址': 'room 2215 building 1 no. 477',
+  '进口商邮编': '518063',
+  // 发件人信息
+  '发件人公司名称': '深圳云途物流有限公司',
+  '发件人姓名': '张三',
+  '发件人国家': '中国',
+  '发件人州/省': '广东省',
+  '发件人城市': '深圳',
+  '发件人详细地址': '南山区科技南路18号深圳湾科技生态园12栋B座23楼',
+  '发件人邮编': '518063',
+  '发件人电话/手机': '138****5678',
+  '发件人邮箱': 'zhangsan@yuntoupost.com',
   // 收件人信息
   '地址类型': '亚马逊地址',
   '仓库代码': 'EWR4',
@@ -181,24 +217,23 @@ const genProducts = (subKey: number) => [
   }
 ];
 
-const PRODUCT_COLUMNS = [
+const createProductColumns = (onPreview: (url: string) => void) => [
   { title: '序号', dataIndex: 'seq', key: 'seq', width: 50 },
   { title: '中文品名', dataIndex: 'cnName', key: 'cnName', width: 100 },
   { title: '英文品名', dataIndex: 'enName', key: 'enName', width: 120 },
   { title: '数量', dataIndex: 'qty', key: 'qty', width: 60 },
   { title: '数量单位', dataIndex: 'unit', key: 'unit', width: 80 },
   { title: '单价', dataIndex: 'unitPrice', key: 'unitPrice', width: 60 },
-  { title: '单重', dataIndex: 'unitWeight', key: 'unitWeight', width: 60 },
-  { title: '总价', dataIndex: 'totalPrice', key: 'totalPrice', width: 60 },
-  { title: '总重', dataIndex: 'totalWeight', key: 'totalWeight', width: 60 },
   { title: '毛重', dataIndex: 'grossWeight', key: 'grossWeight', width: 60 },
   { title: '净重', dataIndex: 'netWeight', key: 'netWeight', width: 60 },
+  { title: '总价', dataIndex: 'totalPrice', key: 'totalPrice', width: 60 },
+  { title: '总重', dataIndex: 'totalWeight', key: 'totalWeight', width: 60 },
   { title: '品牌', dataIndex: 'brand', key: 'brand', width: 80 },
   { title: '型号', dataIndex: 'model', key: 'model', width: 150 },
   { title: '用途', dataIndex: 'purpose', key: 'purpose', width: 80 },
   { title: '材质', dataIndex: 'material', key: 'material', width: 60 },
   { title: '海关编码', dataIndex: 'customsCode', key: 'customsCode', width: 120 },
-  { title: '商品图片', dataIndex: 'productImage', key: 'productImage', width: 80, render: (text: string) => text ? <img src={text} alt="" style={{ width: 36, height: 36, objectFit: 'cover', borderRadius: 2 }} /> : '-' },
+  { title: '商品图片', dataIndex: 'productImage', key: 'productImage', width: 60, render: (text: string) => text ? <a onClick={() => onPreview(text)} style={{ color: '#1D4CD2', cursor: 'pointer' }}>查看</a> : '-' },
   { title: '销售链接', dataIndex: 'salesLink', key: 'salesLink', width: 100 },
   { title: '备注', dataIndex: 'remark', key: 'remark', width: 80 },
 ];
@@ -239,6 +274,7 @@ const Component = forwardRef(function DetailModal(
   const [modalOpen, setModalOpen] = useState(true);
   const [customerRemark, setCustomerRemark] = useState('');
   const [loadingRemark, setLoadingRemark] = useState('');
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   // 不控制展开状态，由 antd Table 内部管理
 
   const configSource = innerProps && innerProps.config ? innerProps.config : {};
@@ -362,7 +398,6 @@ const Component = forwardRef(function DetailModal(
             {renderDetailItem('客服员', detail['客服员'])}
             {renderDetailItem('销售产品', detail['销售产品'])}
             {renderDetailItem('目的国家', detail['目的国家'])}
-            {renderDetailItem('清关方案', detail['清关方案'])}
             {renderDetailItem('是否报关件', detail['是否报关件'])}
             {renderDetailItem('报关方式', detail['报关方式'])}
             {renderDetailItem('入账状态', detail['入账状态'])}
@@ -390,6 +425,33 @@ const Component = forwardRef(function DetailModal(
                 className="detail-remark-input"
               />
             </div>
+          </div>
+
+          {/* 清关信息 */}
+          <div className="detail-section-title">清关信息</div>
+          <div className="detail-grid-4col">
+            {renderDetailItem('清关方案', detail['清关方案'] || '')}
+            {renderDetailItem('税号/TAX ID', detail['税号/TAX ID'] || '')}
+            {renderDetailItem('EORI', detail['EORI'] || '')}
+            {renderDetailItem('BOND有效期', detail['BOND有效期'] || '')}
+            {renderDetailItem('进口商公司名称', detail['进口商公司名称'] || '')}
+            {renderDetailItem('进口商城市', detail['进口商城市'] || '')}
+            {renderDetailItem('进口商地址', detail['进口商地址'] || '')}
+            {renderDetailItem('进口商邮编', detail['进口商邮编'] || '')}
+          </div>
+
+          {/* 发件人信息 */}
+          <div className="detail-section-title">发件人信息</div>
+          <div className="detail-grid-4col">
+            {renderDetailItem('公司名称', detail['发件人公司名称'] || '')}
+            {renderDetailItem('姓名', detail['发件人姓名'] || '')}
+            {renderDetailItem('国家', detail['发件人国家'] || '')}
+            {renderDetailItem('州/省', detail['发件人州/省'] || '')}
+            {renderDetailItem('城市', detail['发件人城市'] || '')}
+            {renderDetailItem('详细地址(含门牌号)', detail['发件人详细地址'] || '')}
+            {renderDetailItem('邮编', detail['发件人邮编'] || '')}
+            {renderDetailItem('电话/手机', detail['发件人电话/手机'] || '')}
+            {renderDetailItem('邮箱', detail['发件人邮箱'] || '')}
           </div>
 
           {/* 收件人信息 */}
@@ -424,7 +486,7 @@ const Component = forwardRef(function DetailModal(
                   expandedRowRender: (record) => (
                     <div className="expanded-product-wrap">
                       <Table
-                        columns={PRODUCT_COLUMNS}
+                        columns={createProductColumns(setPreviewImage)}
                         dataSource={genProducts(record.key as number)}
                         pagination={false}
                         size="small"
@@ -487,6 +549,21 @@ const Component = forwardRef(function DetailModal(
             {renderDetailItem('集装箱号', detail['集装箱号'] || '')}
             {renderDetailItem('车头车牌', detail['车头车牌'] || '')}
           </div>
+        </Modal>
+
+        {/* 图片预览弹框 */}
+        <Modal
+          title="商品图片"
+          open={!!previewImage}
+          onCancel={() => setPreviewImage(null)}
+          footer={null}
+          width={520}
+        >
+          {previewImage && (
+            <div style={{ textAlign: 'center' }}>
+              <img src={previewImage} alt="商品图片" style={{ maxWidth: '100%', maxHeight: 480, objectFit: 'contain' }} />
+            </div>
+          )}
         </Modal>
       </div>
     </div>
