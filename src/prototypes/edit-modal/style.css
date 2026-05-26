@@ -1,11 +1,11 @@
 @import "tailwindcss";
 @import "../../styles/modal-shared.css";
 
-/* B2B编辑弹框 - 页面特有样式（不是弹框内部） */
+/* B2B详情编辑弹框 - 页面特有样式 */
 
 .edit-modal-page {
   padding: 16px 24px;
-  background: rgb(242, 242, 242);
+  background: #f2f3f5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -19,19 +19,284 @@
   flex: 1;
 }
 
-/* ===== 备案附件 ===== */
-.attachment-area {
+/* ===== 弹框标题 ===== */
+.edit-modal-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: rgb(250, 250, 250);
-  border: 1px dashed rgb(217, 217, 217);
-  border-radius: 4px;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  justify-content: flex-start;
+  width: 100%;
 }
 
-.attachment-tip {
+.edit-modal-title-bar {
+  width: 3px;
+  height: 16px;
+  background-color: #1D4CD2;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ===== 弹框主体 ===== */
+.b2b-detail-edit-modal .ant-modal-body {
+  padding: 30px;
+  max-height: 710px;
+  overflow-y: auto;
+}
+
+.b2b-detail-edit-modal .ant-modal {
+  top: 36px;
+}
+
+/* ===== Section 区块 ===== */
+.edit-section {
+  margin-bottom: 0;
+}
+
+.edit-section + .edit-section {
+  margin-top: 16px;
+}
+
+.edit-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.edit-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background-color: #1D4CD2;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.edit-section-extra {
+  font-size: 13px;
+}
+
+.edit-section-content {
+  padding: 0;
+}
+
+/* ===== 备注行 ===== */
+.edit-remark-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 0;
+}
+
+.edit-remark-row .ant-form-item {
+  margin-bottom: 0;
+}
+
+.edit-remark-row .ant-form-item-label > label {
+  font-size: 13px;
+  color: #606266;
+  height: 22px;
+}
+
+/* ===== 4列表单网格 ===== */
+.edit-form-grid-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0 12px;
+}
+
+/* ===== 3列表单网格（商品编辑） ===== */
+.edit-form-grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 12px;
+}
+
+.edit-form-grid-3col .ant-form-item {
+  margin-bottom: 0;
+  padding: 4px 0;
+}
+
+.edit-form-grid-3col .ant-form-item-label {
+  padding-bottom: 2px;
+}
+
+.edit-form-grid-3col .ant-form-item-label > label {
+  font-size: 13px;
+  color: #606266;
+  height: 22px;
+}
+
+.edit-form-grid-4col .ant-form-item {
+  margin-bottom: 0;
+  padding: 4px 0;
+}
+
+.edit-form-grid-4col .ant-form-item-label {
+  padding-bottom: 2px;
+}
+
+.edit-form-grid-4col .ant-form-item-label > label {
+  font-size: 13px;
+  color: #606266;
+  height: 22px;
+}
+
+.edit-form-grid-4col .ant-form-item-label > label.ant-form-item-required::before {
+  display: none !important;
+}
+
+.edit-form-grid-4col .ant-form-item-label > label.ant-form-item-required::after {
+  display: inline-block;
+  margin-left: 0;
+  content: '*';
+  color: #ff4d4f;
+  font-size: 14px;
+}
+
+/* ===== 只读字段 ===== */
+.edit-readonly-field {
+  display: inline-block;
+  font-size: 13px;
+  color: #333;
+  line-height: 32px;
+  min-height: 32px;
+}
+
+/* ===== 必填星号 ===== */
+.form-required-star {
+  color: #ff4d4f;
+  margin-right: 2px;
+  font-size: 14px;
+}
+
+/* ===== 子表格 ===== */
+.edit-table-wrap {
+  margin-top: 4px;
+}
+
+.edit-sub-table .ant-table-thead > tr > th {
+  background: #f5f7fa;
+  color: #606266;
+  font-weight: 600;
   font-size: 12px;
-  color: rgb(153, 153, 153);
-  line-height: 1.4;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e8eaec;
+}
+
+.edit-sub-table .ant-table-tbody > tr > td {
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #606266;
+  border-bottom: 1px solid #e8eaec;
+}
+
+/* ===== 复选框行 ===== */
+.edit-checkbox-row {
+  display: flex;
+  gap: 32px;
+  padding: 8px 0 0;
+}
+
+.edit-checkbox-row .ant-form-item {
+  margin-bottom: 0;
+}
+
+.edit-checkbox-row .ant-form-item-label {
+  padding-bottom: 0;
+}
+
+.edit-checkbox-row .ant-form-item-label > label {
+  font-size: 13px;
+  color: #606266;
+}
+
+/* ===== 底部按钮 ===== */
+.edit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.edit-modal-footer .ant-btn-primary {
+  background-color: #1D4CD2;
+  border-color: #1D4CD2;
+}
+
+/* ===== 申报信息底部 ===== */
+.declaration-footer-grid {
+  display: flex;
+  gap: 48px;
+  margin-top: 12px;
+}
+
+.declaration-footer-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.declaration-footer-label {
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
+}
+
+/* 内嵌子表格 */
+.edit-sub-table-inner {
+  margin: 0;
+}
+
+.edit-sub-table-inner .ant-table {
+  background: #fafafa;
+}
+
+.expanded-product-wrap {
+  padding: 8px 0;
+}
+
+/* ===== 行内编辑输入框 ===== */
+.edit-inline-input {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  padding: 0 4px !important;
+  height: 28px !important;
+  font-size: 12px !important;
+}
+
+.edit-inline-input:hover,
+.edit-inline-input:focus {
+  border-color: #d9d9d9 !important;
+  background: #fff !important;
+}
+
+.edit-sub-table-inner .ant-table-tbody > tr:hover > td .edit-inline-input {
+  border-color: #d9d9d9 !important;
+  background: #fff !important;
+}
+
+/* ===== 重新打开按钮 ===== */
+.edit-reopen-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }

@@ -108,6 +108,7 @@ const DATA_LIST: DataDesc[] = [
       { name: '电话', desc: '电话（字符串）' },
       { name: '公司名称', desc: '公司名称（字符串）' },
       { name: '邮箱', desc: '邮箱（字符串）' },
+      { name: '预约链接', desc: '预约链接（字符串）' },
     ]
   }
 ];
@@ -168,6 +169,7 @@ const MOCK_DETAIL = {
   '电话': '999********99',
   '公司名称': '',
   '邮箱': '',
+  '预约链接': 'https://yuntoupost.com/appointment/20260522',
 };
 
 // 交货信息模拟数据
@@ -468,6 +470,7 @@ const Component = forwardRef(function DetailModal(
             {renderDetailItem('电话', detail['电话'])}
             {renderDetailItem('公司名称', detail['公司名称'])}
             {renderDetailItem('邮箱', detail['邮箱'])}
+            {renderDetailItem('预约链接', detail['预约链接'])}
           </div>
 
           {/* 申报信息 */}

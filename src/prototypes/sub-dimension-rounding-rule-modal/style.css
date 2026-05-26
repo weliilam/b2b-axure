@@ -1,0 +1,365 @@
+/* ===========================================
+ * 材积进位规则弹框样式
+ * 引用共享样式：@import "../../styles/modal-shared.css"
+ * =========================================== */
+
+@import "tailwindcss";
+@import "../../styles/modal-shared.css";
+
+/* ---- 弹框容器 ---- */
+.b2b-rounding-rule-modal {
+  top: 40px;
+}
+
+.b2b-rounding-rule-modal .ant-modal-header {
+  border-bottom: 1px solid #e8e8e8;
+  padding: 16px 24px;
+  margin-bottom: 0;
+}
+
+.b2b-rounding-rule-modal .ant-modal-body {
+  padding: 0 24px 16px;
+}
+
+/* ===== 查询区（与 order-list 列表页样式一致） ===== */
+.query-bar {
+  padding: 12px 16px 4px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 6px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.filter-group {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.fl-label {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* antd 控件在 flex 中占满宽度 */
+.filter-group .ant-select,
+.filter-group .ant-input-affix-wrapper {
+  width: 100% !important;
+  min-width: 80px;
+}
+
+.query-primary-btn {
+  background-color: #1D4CD2 !important;
+  border-color: #1D4CD2 !important;
+  border-radius: 4px;
+  font-size: 12px;
+  height: 32px;
+  padding: 0 14px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.query-primary-btn:hover {
+  background-color: #1640B0 !important;
+  border-color: #1640B0 !important;
+}
+
+/* ---- 操作按钮区 ---- */
+.rule-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 0 16px;
+}
+
+.rule-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  color: #333;
+  background: #fff;
+  padding: 0 10px;
+}
+
+.rule-action-btn:hover {
+  color: #1D4CD2;
+  border-color: #1D4CD2;
+}
+
+.rule-action-btn-danger {
+  color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.rule-action-btn-danger:hover {
+  color: #ff7875 !important;
+  border-color: #ff7875 !important;
+}
+
+/* ---- 分页 ---- */
+.rule-table .ant-pagination {
+  margin: 8px 0 0;
+  padding: 0 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rule-table .ant-pagination .ant-pagination-total-text {
+  font-size: 12px;
+  color: #909399;
+  margin-right: auto;
+}
+
+.rule-table .ant-pagination .ant-pagination-item {
+  border-radius: 3px;
+  font-size: 12px;
+  min-width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+
+.rule-table .ant-pagination .ant-pagination-item-active {
+  border-color: #1D4CD2;
+  background: #1D4CD2;
+}
+
+.rule-table .ant-pagination .ant-pagination-item-active a {
+  color: #fff;
+}
+
+.rule-table .ant-pagination .ant-pagination-prev,
+.rule-table .ant-pagination .ant-pagination-next {
+  min-width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+
+.rule-table .ant-pagination .ant-pagination-prev .ant-pagination-item-link,
+.rule-table .ant-pagination .ant-pagination-next .ant-pagination-item-link {
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+/* ---- 数据表格 ---- */
+.rule-table-wrap {
+  width: 100%;
+  border: 1px solid #e8eaec;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  margin-left: 16px;
+  margin-right: 16px;
+  width: calc(100% - 32px);
+}
+
+.rule-table .ant-table-thead > tr > th {
+  background: #f5f7fa;
+  font-weight: 600;
+  font-size: 12px;
+  color: #606266;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-bottom: 1px solid #e8eaec;
+}
+
+.rule-table .ant-table-thead > tr > th.ant-table-cell {
+  border-right: none;
+}
+
+.rule-table .ant-table-tbody > tr > td {
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #606266;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.rule-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+.rule-table .ant-table-tbody > tr:hover > td {
+  background: #f0f5ff;
+}
+
+.rule-table .ant-table-selection-column {
+  text-align: center;
+}
+
+/* ---- 国家文字省略 ---- */
+.rule-country-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: default;
+}
+
+/* ---- 操作列按钮 ---- */
+.rule-action-cell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.action-link-btn {
+  font-size: 12px;
+  padding: 0 6px;
+  height: 22px;
+  color: #1D4CD2;
+}
+
+.action-link-btn:hover {
+  color: #1640B0;
+}
+
+.action-link-disable {
+  color: #faad14;
+}
+
+.action-link-disable:hover {
+  color: #ffc53d;
+}
+
+.action-link-danger {
+  color: #ff4d4f;
+}
+
+.action-link-danger:hover {
+  color: #ff7875;
+}
+
+/* ===== 新增/修改表单弹框 ===== */
+.b2b-rule-form-modal {
+  top: 80px;
+}
+
+.b2b-rule-form-modal .ant-modal-header {
+  border-bottom: 1px solid #e8e8e8;
+  padding: 16px 24px;
+  margin-bottom: 0;
+}
+
+.b2b-rule-form-modal .ant-modal-body {
+  padding: 24px 24px 16px;
+}
+
+.b2b-rule-form-modal .ant-modal-footer {
+  border-top: 1px solid #e8e8e8;
+  padding: 12px 24px;
+  text-align: right;
+}
+
+/* 表单网格 */
+.rule-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 46px;
+}
+
+.rule-form-grid .ant-form-item {
+  margin-bottom: 14px;
+}
+
+/* 生效时间（RangePicker 区间） */
+.rule-form-date-range {
+  margin-bottom: 14px;
+}
+
+.rule-form-date-range .ant-form-item {
+  margin-bottom: 0;
+}
+
+.rule-form-date-range-label {
+  font-size: 13px;
+  color: rgb(59, 59, 59);
+  font-weight: 500;
+  line-height: 1.4;
+  padding-bottom: 4px;
+}
+
+.rule-form-date-range .ant-picker {
+  width: 100%;
+  height: 32px;
+  border-radius: 4px;
+}
+
+.rule-form-grid .ant-form-item-label {
+  padding-bottom: 4px;
+}
+
+.rule-form-grid .ant-form-item-label > label {
+  font-size: 13px;
+  color: rgb(59, 59, 59);
+  font-weight: 500;
+  line-height: 1.4;
+  height: auto;
+}
+
+.rule-form-grid .ant-form-item .ant-select-selector,
+.rule-form-grid .ant-form-item .ant-input {
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid rgb(217, 217, 217);
+}
+
+.rule-form-grid .ant-form-item .ant-select-selector:hover,
+.rule-form-grid .ant-form-item .ant-input:hover {
+  border-color: #1D4CD2;
+}
+
+.rule-form-grid .ant-form-item .ant-select-focused .ant-select-selector,
+.rule-form-grid .ant-form-item .ant-input:focus {
+  border-color: #1D4CD2;
+  box-shadow: 0 0 0 2px rgba(29, 76, 210, 0.1);
+}
+
+/* 表单弹框底部按钮 */
+.rule-form-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.rule-form-modal-footer .ant-btn-primary {
+  background-color: #1D4CD2 !important;
+  border-color: #1D4CD2 !important;
+  color: #fff;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+
+.rule-form-modal-footer .ant-btn-primary:hover {
+  background-color: #1640B0 !important;
+  border-color: #1640B0 !important;
+}
+
+.rule-form-modal-footer .ant-btn-default {
+  border: 1px solid rgb(217, 217, 217);
+  color: rgb(59, 59, 59);
+  border-radius: 4px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
+}

@@ -17,8 +17,8 @@ import {
 } from 'antd';
 import type { MenuProps } from 'antd';
 import {
-  SearchOutlined, PlusOutlined, ReloadOutlined, DownOutlined,
-  UpOutlined, UploadOutlined, MoreOutlined,
+  SearchOutlined, PlusOutlined, ReloadOutlined,
+  UploadOutlined, MoreOutlined, FilterOutlined,
 } from '@ant-design/icons';
 import type {
   KeyDesc,
@@ -144,7 +144,7 @@ const Component = forwardRef(function TaxList(
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [current, setCurrent] = useState(1);
-  const [expanded, setExpanded] = useState(false);
+  const [advancedModalOpen, setAdvancedModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<TaxRecord | null>(null);
 
@@ -392,28 +392,9 @@ const Component = forwardRef(function TaxList(
             </div>
           </div>
 
-          {expanded && (
-            <div className="filter-row" style={{ marginTop: 8 }}>
-              <div className="filter-group">
-                <span className="fl-label">客户等级</span>
-                <Select placeholder="请选择" options={[
-                  { value: '', label: '全部' },
-                  { value: 'A级', label: 'A级' },
-                  { value: 'B级', label: 'B级' },
-                  { value: 'C级', label: 'C级' },
-                  { value: 'D级', label: 'D级' },
-                ]} />
-              </div>
-              <div className="filter-group">
-                <span className="fl-label">EORI税号</span>
-                <Input placeholder="请输入" />
-              </div>
-            </div>
-          )}
-
           <div className="query-actions">
-            <Button type="link" className="expand-btn" onClick={() => setExpanded(!expanded)}>
-              {expanded ? '收起' : '展开'}高级查询 {expanded ? <UpOutlined /> : <DownOutlined />}
+            <Button type="link" className="expand-btn" icon={<FilterOutlined />} onClick={() => setAdvancedModalOpen(true)}>
+              高级查询
             </Button>
             <div className="query-buttons">
               <Button type="primary" icon={<SearchOutlined />}>查询</Button>
@@ -586,6 +567,80 @@ const Component = forwardRef(function TaxList(
               </Form.Item>
             </div>
           </Form>
+        </Modal>
+
+        {/* 高级查询弹框 */}
+        <Modal
+          title={<div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 600, color: '#333', justifyContent: 'flex-start', width: '100%' }}><span style={{ width: 3, height: 16, backgroundColor: '#1D4CD2', borderRadius: 2, flexShrink: 0 }} />高级查询</div>}
+          open={advancedModalOpen}
+          onCancel={() => setAdvancedModalOpen(false)}
+          width={640}
+          className="b2b-advanced-query-modal"
+          footer={
+            <div className="modal-footer">
+              <Button onClick={() => setAdvancedModalOpen(false)}>取消</Button>
+              <Button type="primary" icon={<SearchOutlined />} onClick={() => setAdvancedModalOpen(false)}>查询</Button>
+            </div>
+          }
+        >
+          <div className="advanced-query-fields">
+            <div className="form-grid">
+              <div className="filter-field">
+                <span className="fl-label">客户等级</span>
+                <Select placeholder="请选择" options={[
+                  { value: '', label: '全部' },
+                  { value: 'A级', label: 'A级' },
+                  { value: 'B级', label: 'B级' },
+                  { value: 'C级', label: 'C级' },
+                  { value: 'D级', label: 'D级' },
+                ]} style={{ width: '100%' }} />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">EORI税号</span>
+                <Input placeholder="请输入" />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">业务员</span>
+                <Select placeholder="请选择" options={[
+                  { value: '', label: '全部' },
+                  { value: '陈晶晶', label: '陈晶晶' },
+                  { value: '温必龙', label: '温必龙' },
+                  { value: '吴住宝', label: '吴住宝' },
+                  { value: '范文宇', label: '范文宇' },
+                ]} style={{ width: '100%' }} />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">客服员</span>
+                <Select placeholder="请选择" options={[
+                  { value: '', label: '全部' },
+                  { value: '王洲赫', label: '王洲赫' },
+                  { value: '栾世萍', label: '栾世萍' },
+                  { value: '李思锦', label: '李思锦' },
+                  { value: '张欣怡', label: '张欣怡' },
+                ]} style={{ width: '100%' }} />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">进口商名称</span>
+                <Input placeholder="请输入" />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">进口商邮编</span>
+                <Input placeholder="请输入" />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">进口商城市</span>
+                <Input placeholder="请输入" />
+              </div>
+              <div className="filter-field">
+                <span className="fl-label">创建时间</span>
+                <span className="filter-date-wrap">
+                  <DatePicker placeholder="开始时间" />
+                  <span className="date-sep">-</span>
+                  <DatePicker placeholder="结束时间" />
+                </span>
+              </div>
+            </div>
+          </div>
         </Modal>
       </div>
     </div>

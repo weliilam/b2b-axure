@@ -231,3 +231,50 @@
 }
 
 /* ===== 编辑弹框（共享：已从 modal-shared.css 引入） ===== */
+
+/* ===== 高级查询弹框 ===== */
+.b2b-advanced-query-modal .ant-modal-body {
+  padding: 20px 24px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.advanced-query-fields .form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.advanced-query-fields .filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.advanced-query-fields .filter-field .fl-label {
+  font-size: 13px;
+  color: #606266;
+  font-weight: 500;
+}
+
+.advanced-query-fields .filter-date-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.advanced-query-fields .filter-date-wrap .ant-picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.b2b-advanced-query-modal .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.b2b-advanced-query-modal .ant-btn-primary {
+  background-color: #1D4CD2;
+  border-color: #1D4CD2;
+}
