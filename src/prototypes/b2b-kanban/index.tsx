@@ -32,6 +32,8 @@ import type {
 import { MOCK_FIELDS } from './mock-fields';
 import B2B_ORDERS from '../../database/b2b-orders.json';
 const MOCK_DATA_ALL = B2B_ORDERS.records;
+const PRODUCTS = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['销售产品']).filter(Boolean))];
+const COUNTRIES = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['目的国家']).filter(Boolean))];
 
 const { RangePicker } = DatePicker;
 
@@ -40,7 +42,7 @@ interface ScenarioSearchValues {
   waybillNo: string;
   b2bNo: string;
   orderType: string | undefined;
-  orderStatus: string | undefined;
+  orderStatus: string[];
   auditStatus: string | undefined;
   product: string | undefined;
   country: string | undefined;
@@ -156,7 +158,7 @@ const Component = forwardRef(function KanbanBoard(
   const [searchB2bNo, setSearchB2bNo] = useState('');
   const [searchCreateTime, setSearchCreateTime] = useState<[any, any] | null>(null);
   const [searchOrderType, setSearchOrderType] = useState<string | undefined>(undefined);
-  const [searchOrderStatus, setSearchOrderStatus] = useState<string | undefined>(undefined);
+  const [searchOrderStatus, setSearchOrderStatus] = useState<string[]>([]);
   const [searchAuditStatus, setSearchAuditStatus] = useState<string | undefined>(undefined);
   const [searchProduct, setSearchProduct] = useState<string | undefined>(undefined);
   const [searchCountry, setSearchCountry] = useState<string | undefined>(undefined);
@@ -184,7 +186,7 @@ const Component = forwardRef(function KanbanBoard(
   const [editName, setEditName] = useState('');
   const [editFieldKeys, setEditFieldKeys] = useState<string[]>([]);
   const [editSearchValues, setEditSearchValues] = useState<ScenarioSearchValues>({
-    waybillNo: '', b2bNo: '', orderType: undefined, orderStatus: undefined,
+    waybillNo: '', b2bNo: '', orderType: undefined, orderStatus: [],
     auditStatus: undefined, product: undefined, country: undefined,
     channel: '', salesman: '', customerCode: '', isCustoms: undefined,
     addrType: undefined, isExtra: undefined, isValueAddDone: undefined,
@@ -372,7 +374,7 @@ const Component = forwardRef(function KanbanBoard(
     setSearchB2bNo('');
     setSearchCreateTime(null);
     setSearchOrderType(undefined);
-    setSearchOrderStatus(undefined);
+    setSearchOrderStatus([]);
     setSearchAuditStatus(undefined);
     setSearchProduct(undefined);
     setSearchCountry(undefined);
@@ -455,9 +457,9 @@ const Component = forwardRef(function KanbanBoard(
       title: '操作', key: '操作', width: 80, fixed: 'right' as const, align: 'center' as const,
       render: (_: any, record: OrderRecord) => (
         <span>
-          <a className="table-action-link" onClick={() => emitEvent('onSearch', JSON.stringify({ action: 'detail', key: record.key }))}>详情</a>
+          <a className="table-action-link" onClick={() => emitEvent('onSearch', JSON.stringify({ action: 'detail', key: record.id }))}>详情</a>
           <span className="table-action-divider">|</span>
-          <a className="table-action-link" onClick={() => emitEvent('onSearch', JSON.stringify({ action: 'log', key: record.key }))}>日志</a>
+          <a className="table-action-link" onClick={() => emitEvent('onSearch', JSON.stringify({ action: 'log', key: record.id }))}>日志</a>
         </span>
       ),
     },
@@ -473,6 +475,37 @@ const Component = forwardRef(function KanbanBoard(
   const sfVisible = useCallback((key: string) =>
     visibleSearchFieldKeys.includes(key) ? undefined : 'none' as React.CSSProperties['display']
   , [visibleSearchFieldKeys]);
+
+  // 搜索过滤
+  const filteredData = React.useMemo(() => {
+    return MOCK_DATA_ALL.filter((record: Record<string, string>) => {
+      if (searchWaybillNo && !record['运单号']?.includes(searchWaybillNo)) return false;
+      if (searchB2bNo && !record['B2B单号']?.includes(searchB2bNo)) return false;
+      if (searchOrderType && record['订单类型'] !== searchOrderType) return false;
+      if (searchOrderStatus.length > 0 && !searchOrderStatus.includes(record['订单状态'])) return false;
+      if (searchAuditStatus && record['订单审核状态'] !== searchAuditStatus) return false;
+      if (searchProduct && record['销售产品'] !== searchProduct) return false;
+      if (searchCountry && record['目的国家'] !== searchCountry) return false;
+      if (searchChannel && !record['服务渠道名称']?.includes(searchChannel)) return false;
+      if (searchSalesman && !record['业务员']?.includes(searchSalesman)) return false;
+      if (searchCustomerCode && !record['客户代码']?.includes(searchCustomerCode)) return false;
+      if (searchIsCustoms !== undefined && record['是否报关件'] !== searchIsCustoms) return false;
+      if (searchAddrType && record['地址类型'] !== searchAddrType) return false;
+      if (searchIsExtra !== undefined && record['是否需要增值服务'] !== searchIsExtra) return false;
+      if (searchIsValueAddDone !== undefined && record['是否完成增值服务'] !== searchIsValueAddDone) return false;
+      if (searchIsStowable !== undefined && record['是否可配载'] !== searchIsStowable) return false;
+      if (searchAddrAuditStatus && record['地址审核状态'] !== searchAddrAuditStatus) return false;
+      if (searchIsIntercept !== undefined && record['是否拦截'] !== searchIsIntercept) return false;
+      if (searchBillingResult && record['入账结果'] !== searchBillingResult) return false;
+      return true;
+    });
+  }, [
+    MOCK_DATA_ALL, searchWaybillNo, searchB2bNo, searchOrderType, searchOrderStatus,
+    searchAuditStatus, searchProduct, searchCountry, searchChannel, searchSalesman,
+    searchCustomerCode, searchIsCustoms, searchAddrType, searchIsExtra,
+    searchIsValueAddDone, searchIsStowable, searchAddrAuditStatus, searchIsIntercept,
+    searchBillingResult,
+  ]);
 
   return (
     <div className="b2b-order-list-page">
@@ -566,16 +599,24 @@ const Component = forwardRef(function KanbanBoard(
             <div className="filter-group" style={{ display: sfVisible('orderStatus') }}>
               <span className="fl-label">订单状态</span>
               <Select
+                mode="multiple"
                 placeholder="全部"
                 value={searchOrderStatus}
                 onChange={setSearchOrderStatus}
                 allowClear
                 options={[
-                  { value: '待审核', label: '待审核' },
-                  { value: '审核通过', label: '审核通过' },
                   { value: '待客户确认', label: '待客户确认' },
+                  { value: '草稿', label: '草稿' },
                   { value: '已预报', label: '已预报' },
-                  { value: '已入仓', label: '已入仓' },
+                  { value: '已收货', label: '已收货' },
+                  { value: '已出仓', label: '已出仓' },
+                  { value: '已签收', label: '已签收' },
+                  { value: '客户已确认', label: '客户已确认' },
+                  { value: '客户已驳回', label: '客户已驳回' },
+                  { value: '已退件', label: '已退件' },
+                  { value: '已理赔', label: '已理赔' },
+                  { value: '已删除', label: '已删除' },
+                  { value: '弃件', label: '弃件' },
                 ]}
               />
             </div>
@@ -587,9 +628,8 @@ const Component = forwardRef(function KanbanBoard(
                 onChange={setSearchAuditStatus}
                 allowClear
                 options={[
-                  { value: '待审核', label: '待审核' },
                   { value: '审核通过', label: '审核通过' },
-                  { value: '审核失败', label: '审核失败' },
+                  { value: '审核不通过', label: '审核不通过' },
                 ]}
               />
             </div>
@@ -724,7 +764,7 @@ const Component = forwardRef(function KanbanBoard(
                   onChange={setSearchAddrAuditStatus}
                   allowClear
                   options={[
-                    { value: '已通过', label: '已通过' },
+                    { value: '已审核', label: '已审核' },
                     { value: '待审核', label: '待审核' },
                   ]}
                 />
@@ -797,7 +837,7 @@ const Component = forwardRef(function KanbanBoard(
           <div className="toolbar-right">
             <Button type="primary" icon={<SearchOutlined />}>查询</Button>
             <Button onClick={resetSearch}>重置</Button>
-            <span className="total-text">共 48 条</span>
+            <span className="total-text">共 {filteredData.length} 条</span>
           </div>
         </div>
 
@@ -805,8 +845,8 @@ const Component = forwardRef(function KanbanBoard(
         <div className="table-wrapper-custom">
           <Table
             columns={columns}
-            dataSource={MOCK_DATA_ALL}
-            rowKey="key"
+            dataSource={filteredData}
+            rowKey="id"
             rowSelection={{
               selectedRowKeys,
               onChange: (keys) => {
@@ -815,7 +855,7 @@ const Component = forwardRef(function KanbanBoard(
               },
             }}
             pagination={{
-              current, pageSize, total: 48,
+              current, pageSize, total: filteredData.length,
               onChange: (page) => {
                 setCurrent(page);
                 emitEvent('onPageChange', JSON.stringify({ page }));
@@ -882,12 +922,12 @@ const Component = forwardRef(function KanbanBoard(
                 const selectYesNo = ['isCustoms', 'isExtra', 'isValueAddDone', 'isStowable', 'isIntercept'].includes(f.key);
                 const selectOptions: Record<string, { value: string; label: string }[]> = {
                   orderType: [{ value: '', label: '全部' }, { value: 'B2B', label: 'B2B' }, { value: 'B2C', label: 'B2C' }],
-                  orderStatus: [{ value: '', label: '全部' }, { value: '待审核', label: '待审核' }, { value: '审核通过', label: '审核通过' }, { value: '待客户确认', label: '待客户确认' }, { value: '已预报', label: '已预报' }, { value: '已入仓', label: '已入仓' }],
-                  auditStatus: [{ value: '', label: '全部' }, { value: '待审核', label: '待审核' }, { value: '审核通过', label: '审核通过' }, { value: '审核失败', label: '审核失败' }],
+                  orderStatus: [{ value: '', label: '全部' }, { value: '待客户确认', label: '待客户确认' }, { value: '草稿', label: '草稿' }, { value: '已预报', label: '已预报' }, { value: '已收货', label: '已收货' }, { value: '已出仓', label: '已出仓' }, { value: '已签收', label: '已签收' }, { value: '客户已确认', label: '客户已确认' }, { value: '客户已驳回', label: '客户已驳回' }, { value: '已退件', label: '已退件' }, { value: '已理赔', label: '已理赔' }, { value: '已删除', label: '已删除' }, { value: '弃件', label: '弃件' }],
+                  auditStatus: [{ value: '', label: '全部' }, { value: '审核通过', label: '审核通过' }, { value: '审核不通过', label: '审核不通过' }],
                   product: [{ value: '', label: '全部' }, ...PRODUCTS.map(p => ({ value: p, label: p }))],
                   country: [{ value: '', label: '全部' }, ...COUNTRIES.map(c => ({ value: c, label: c }))],
-                  addrType: [{ value: '', label: '全部' }, { value: '亚马逊地址', label: '亚马逊地址' }, { value: '商业地址', label: '商业地址' }],
-                  addrAuditStatus: [{ value: '', label: '全部' }, { value: '已通过', label: '已通过' }, { value: '待审核', label: '待审核' }],
+                  addrType: [{ value: '', label: '全部' }, { value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }],
+                  addrAuditStatus: [{ value: '', label: '全部' }, { value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }],
                   billingResult: [{ value: '', label: '全部' }, { value: '1360 RMB', label: '1360 RMB' }, { value: '2700 RMB', label: '2700 RMB' }],
                 };
                 const isSelect = selectYesNo || selectOptions[f.key];
@@ -898,8 +938,9 @@ const Component = forwardRef(function KanbanBoard(
                       <Select
                         size="small"
                         style={{ width: '100%' }}
-                        value={val || ''}
-                        onChange={(v) => updateEditSearchValue(f.key, v || undefined)}
+                        mode={f.key === 'orderStatus' ? 'multiple' : undefined}
+                        value={f.key === 'orderStatus' ? (val || []) : (val || '')}
+                        onChange={(v) => updateEditSearchValue(f.key, f.key === 'orderStatus' ? v : (v || undefined))}
                         options={selectYesNo
                           ? [{ value: '', label: '全部' }, { value: '是', label: '是' }, { value: '否', label: '否' }]
                           : selectOptions[f.key]
