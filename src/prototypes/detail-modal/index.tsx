@@ -109,6 +109,7 @@ const DATA_LIST: DataDesc[] = [
       { name: '公司名称', desc: '公司名称（字符串）' },
       { name: '邮箱', desc: '邮箱（字符串）' },
       { name: '预约链接', desc: '预约链接（字符串）' },
+      { name: '预约码', desc: '预约码（字符串）' },
     ]
   }
 ];
@@ -471,6 +472,7 @@ const Component = forwardRef(function DetailModal(
             {renderDetailItem('公司名称', detail['公司名称'])}
             {renderDetailItem('邮箱', detail['邮箱'])}
             {renderDetailItem('预约链接', detail['预约链接'])}
+            {renderDetailItem('预约码', detail['预约码'])}
           </div>
 
           {/* 申报信息 */}

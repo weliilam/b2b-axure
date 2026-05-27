@@ -96,6 +96,7 @@ const DATA_LIST: DataDesc[] = [
       { name: '公司名称', desc: '公司名称（字符串）' },
       { name: '邮箱', desc: '邮箱（字符串）' },
       { name: '预约链接', desc: '预约链接（字符串）' },
+      { name: '预约码', desc: '预约码（字符串）' },
       // 交货信息
       { name: '交货方式', desc: '交货方式（字符串）' },
       { name: '交货仓库', desc: '交货仓库（字符串）' },
@@ -458,6 +459,9 @@ const Component = forwardRef(function EditModal(
                   </Form.Item>
                   <Form.Item name="预约链接" label="预约链接">
                     <Input placeholder="请输入链接" />
+                  </Form.Item>
+                  <Form.Item name="预约码" label="预约码">
+                    <Input placeholder="请输入" />
                   </Form.Item>
                 </div>
               </div>
