@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx vite build",
+  "buildCommand": "pnpm vendor:sync && node scripts/scan-entries.js && node scripts/build-all.js && node scripts/generate-dist-html.js",
   "outputDirectory": "dist",
   "framework": null
 }
