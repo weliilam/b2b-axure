@@ -37,6 +37,31 @@ const COUNTRIES = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r
 
 const { RangePicker } = DatePicker;
 
+// ============ 场景持久化 ============
+const STORAGE_KEY_SCENARIOS = 'b2b_kanban_scenarios';
+const STORAGE_KEY_ACTIVE = 'b2b_kanban_active_scenario';
+
+function loadScenarios(): Scenario[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SCENARIOS);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveScenarios(scenarios: Scenario[]) {
+  try { localStorage.setItem(STORAGE_KEY_SCENARIOS, JSON.stringify(scenarios)); } catch {}
+}
+
+function loadActiveScenarioId(): string {
+  try {
+    return localStorage.getItem(STORAGE_KEY_ACTIVE) || '__default__';
+  } catch { return '__default__'; }
+}
+
+function saveActiveScenarioId(id: string) {
+  try { localStorage.setItem(STORAGE_KEY_ACTIVE, id); } catch {}
+}
+
 // ============ 场景类型 ============
 interface ScenarioSearchValues {
   waybillNo: string;
@@ -177,8 +202,8 @@ const Component = forwardRef(function KanbanBoard(
   const [searchFirstStowableTime, setSearchFirstStowableTime] = useState<[any, any] | null>(null);
 
   // ===== 场景管理 =====
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [activeScenarioId, setActiveScenarioId] = useState<string>('__default__');
+  const [scenarios, setScenarios] = useState<Scenario[]>(loadScenarios);
+  const [activeScenarioId, setActiveScenarioId] = useState<string>(loadActiveScenarioId);
   const [visibleColumnKeys, setVisibleColumnKeys] = useState<string[]>(DEFAULT_ALL_COLUMN_KEYS);
   const [visibleSearchFieldKeys, setVisibleSearchFieldKeys] = useState<string[]>(ALL_SEARCH_FIELD_KEYS);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -194,6 +219,10 @@ const Component = forwardRef(function KanbanBoard(
     billingResult: undefined,
   });
   const [editColumnKeys, setEditColumnKeys] = useState<string[]>(DEFAULT_ALL_COLUMN_KEYS);
+
+  // 场景持久化
+  React.useEffect(() => { saveScenarios(scenarios); }, [scenarios]);
+  React.useEffect(() => { saveActiveScenarioId(activeScenarioId); }, [activeScenarioId]);
 
   const getSearchValues = useCallback((): ScenarioSearchValues => ({
     waybillNo: searchWaybillNo,
