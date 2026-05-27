@@ -629,6 +629,7 @@ const Component = forwardRef(function KanbanBoard(
                 allowClear
                 options={[
                   { value: '审核通过', label: '审核通过' },
+                  { value: '待审核', label: '待审核' },
                   { value: '审核不通过', label: '审核不通过' },
                 ]}
               />
@@ -923,7 +924,7 @@ const Component = forwardRef(function KanbanBoard(
                 const selectOptions: Record<string, { value: string; label: string }[]> = {
                   orderType: [{ value: '', label: '全部' }, { value: 'B2B', label: 'B2B' }, { value: '整柜', label: '整柜' }],
                   orderStatus: [{ value: '', label: '全部' }, { value: '待客户确认', label: '待客户确认' }, { value: '草稿', label: '草稿' }, { value: '已预报', label: '已预报' }, { value: '已收货', label: '已收货' }, { value: '已出仓', label: '已出仓' }, { value: '已签收', label: '已签收' }, { value: '客户已确认', label: '客户已确认' }, { value: '客户已驳回', label: '客户已驳回' }, { value: '已退件', label: '已退件' }, { value: '已理赔', label: '已理赔' }, { value: '已删除', label: '已删除' }, { value: '弃件', label: '弃件' }],
-                  auditStatus: [{ value: '', label: '全部' }, { value: '审核通过', label: '审核通过' }, { value: '审核不通过', label: '审核不通过' }],
+                  auditStatus: [{ value: '', label: '全部' }, { value: '审核通过', label: '审核通过' }, { value: '待审核', label: '待审核' }, { value: '审核不通过', label: '审核不通过' }],
                   product: [{ value: '', label: '全部' }, ...PRODUCTS.map(p => ({ value: p, label: p }))],
                   country: [{ value: '', label: '全部' }, ...COUNTRIES.map(c => ({ value: c, label: c }))],
                   addrType: [{ value: '', label: '全部' }, { value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }],
