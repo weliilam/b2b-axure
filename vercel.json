@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm vendor:sync && ENTRY_KEY=prototypes/b2b-kanban npx vite build && node scripts/generate-dist-html.js",
+  "buildCommand": "pnpm vendor:sync && node scripts/scan-entries.js && node scripts/build-all.js && node scripts/generate-dist-html.js",
   "outputDirectory": "dist",
   "framework": null,
   "cleanUrls": true
