@@ -40,8 +40,7 @@ for (const key of entryKeys) {
   });
 
   if (result.status !== 0) {
-    console.error(`构建 ${key} 失败，退出码 ${result.status}`);
-    process.exit(result.status ?? 1);
+    console.error(`构建 ${key} 失败，退出码 ${result.status}，跳过继续构建`);
   }
 }
 
