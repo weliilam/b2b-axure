@@ -279,11 +279,11 @@ const Component = forwardRef(function KanbanBoard(
   const openEditScenario = useCallback((scenario: Scenario | null) => {
     setEditingScenario(scenario);
     setEditName(scenario ? scenario.name : '');
-    setEditFieldKeys(scenario ? [...scenario.visibleSearchFieldKeys] : [...ALL_SEARCH_FIELD_KEYS]);
+    setEditFieldKeys(scenario ? [...scenario.visibleSearchFieldKeys] : [...visibleSearchFieldKeys]);
     setEditSearchValues(scenario ? { ...scenario.searchValues } : getSearchValues());
     setEditColumnKeys(scenario ? [...scenario.visibleColumnKeys] : [...visibleColumnKeys]);
     setEditModalOpen(true);
-  }, [getSearchValues, visibleColumnKeys]);
+  }, [getSearchValues, visibleColumnKeys, visibleSearchFieldKeys]);
 
   const updateEditSearchValue = useCallback((key: string, value: string | undefined) => {
     setEditSearchValues(prev => ({ ...prev, [key]: value }));
