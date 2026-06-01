@@ -45,7 +45,13 @@ const STORAGE_KEY_ACTIVE = 'b2b_kanban_active_scenario';
 function loadScenarios(): Scenario[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SCENARIOS);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const scenarios: Scenario[] = JSON.parse(raw);
+    // 迁移：为旧场景补全新增的搜索字段
+    return scenarios.map(s => ({
+      ...s,
+      visibleSearchFieldKeys: [...new Set([...s.visibleSearchFieldKeys, ...ALL_SEARCH_FIELD_KEYS])],
+    }));
   } catch { return []; }
 }
 
@@ -86,6 +92,8 @@ interface ScenarioSearchValues {
   billingWeight: string | undefined;
   createTime: string[] | null;
   auditTime: string[] | null;
+  signInTime: string[] | null;
+  stowableTime: string[] | null;
   firstStowableTime: string[] | null;
 }
 
@@ -120,6 +128,11 @@ const SEARCH_FIELD_DEFS = [
   { key: 'isIntercept', label: '是否拦截' },
   { key: 'billingResult', label: '计费结果' },
   { key: 'billingWeight', label: '计费重>' },
+  { key: 'createTime', label: '创建时间' },
+  { key: 'auditTime', label: '审核时间' },
+  { key: 'signInTime', label: '签入时间' },
+  { key: 'stowableTime', label: '可配载时间' },
+  { key: 'firstStowableTime', label: '首次可配载时间' },
 ];
 const ALL_SEARCH_FIELD_KEYS = SEARCH_FIELD_DEFS.map(d => d.key);
 
@@ -207,6 +220,8 @@ const Component = forwardRef(function KanbanBoard(
   const [searchBillingWeight, setSearchBillingWeight] = useState('');
   const [searchAuditTime, setSearchAuditTime] = useState<[any, any] | null>(null);
   const [searchFirstStowableTime, setSearchFirstStowableTime] = useState<[any, any] | null>(null);
+  const [searchSignInTime, setSearchSignInTime] = useState<[any, any] | null>(null);
+  const [searchStowableTime, setSearchStowableTime] = useState<[any, any] | null>(null);
 
   // ===== 场景管理 =====
   const [scenarios, setScenarios] = useState<Scenario[]>(loadScenarios);
@@ -223,7 +238,7 @@ const Component = forwardRef(function KanbanBoard(
     channel: '', salesman: '', customerCode: '', isCustoms: undefined,
     addrType: undefined, isExtra: undefined, isValueAddDone: undefined,
     isStowable: undefined, addrAuditStatus: undefined, isIntercept: undefined,
-    billingResult: undefined, billingWeight: undefined, createTime: null, auditTime: null, firstStowableTime: null,
+    billingResult: undefined, billingWeight: undefined, createTime: null, auditTime: null, signInTime: null, stowableTime: null, firstStowableTime: null,
   });
   const [editColumnKeys, setEditColumnKeys] = useState<string[]>(DEFAULT_ALL_COLUMN_KEYS);
 
@@ -253,13 +268,15 @@ const Component = forwardRef(function KanbanBoard(
     billingWeight: searchBillingWeight || undefined,
     createTime: searchCreateTime ? [String(searchCreateTime[0]), String(searchCreateTime[1])] : null,
     auditTime: searchAuditTime ? [String(searchAuditTime[0]), String(searchAuditTime[1])] : null,
+    signInTime: searchSignInTime ? [String(searchSignInTime[0]), String(searchSignInTime[1])] : null,
+    stowableTime: searchStowableTime ? [String(searchStowableTime[0]), String(searchStowableTime[1])] : null,
     firstStowableTime: searchFirstStowableTime ? [String(searchFirstStowableTime[0]), String(searchFirstStowableTime[1])] : null,
   }), [
     searchWaybillNo, searchB2bNo, searchOrderType, searchOrderStatus,
     searchAuditStatus, searchProduct, searchCountry, searchChannel,
     searchSalesman, searchCustomerCode, searchIsCustoms, searchAddrType,
     searchIsExtra, searchIsValueAddDone, searchIsStowable, searchAddrAuditStatus,
-    searchIsIntercept, searchBillingResult, searchBillingWeight, searchCreateTime, searchAuditTime, searchFirstStowableTime,
+    searchIsIntercept, searchBillingResult, searchBillingWeight, searchCreateTime, searchAuditTime, searchSignInTime, searchStowableTime, searchFirstStowableTime,
   ]);
 
   const applyScenario = useCallback((s: Scenario) => {
@@ -285,6 +302,8 @@ const Component = forwardRef(function KanbanBoard(
     setSearchBillingWeight(v.billingWeight || '');
     setSearchCreateTime(v.createTime ? [v.createTime[0] as any, v.createTime[1] as any] : null);
     setSearchAuditTime(v.auditTime ? [v.auditTime[0] as any, v.auditTime[1] as any] : null);
+    setSearchSignInTime(v.signInTime ? [v.signInTime[0] as any, v.signInTime[1] as any] : null);
+    setSearchStowableTime(v.stowableTime ? [v.stowableTime[0] as any, v.stowableTime[1] as any] : null);
     setSearchFirstStowableTime(v.firstStowableTime ? [v.firstStowableTime[0] as any, v.firstStowableTime[1] as any] : null);
     setVisibleColumnKeys(s.visibleColumnKeys);
     setVisibleSearchFieldKeys(s.visibleSearchFieldKeys);
@@ -326,6 +345,8 @@ const Component = forwardRef(function KanbanBoard(
     setSearchBillingWeight(vals.billingWeight || '');
     setSearchCreateTime(vals.createTime ? [vals.createTime[0] as any, vals.createTime[1] as any] : null);
     setSearchAuditTime(vals.auditTime ? [vals.auditTime[0] as any, vals.auditTime[1] as any] : null);
+    setSearchSignInTime(vals.signInTime ? [vals.signInTime[0] as any, vals.signInTime[1] as any] : null);
+    setSearchStowableTime(vals.stowableTime ? [vals.stowableTime[0] as any, vals.stowableTime[1] as any] : null);
     setSearchFirstStowableTime(vals.firstStowableTime ? [vals.firstStowableTime[0] as any, vals.firstStowableTime[1] as any] : null);
   }, []);
 
@@ -440,6 +461,8 @@ const Component = forwardRef(function KanbanBoard(
     setSearchBillingWeight('');
     setSearchAuditTime(null);
     setSearchFirstStowableTime(null);
+    setSearchSignInTime(null);
+    setSearchStowableTime(null);
   };
 
   const activeScenario = activeScenarioId === '__default__'
@@ -871,6 +894,20 @@ const Component = forwardRef(function KanbanBoard(
                   onChange={(dates) => setSearchAuditTime(dates as any)}
                 />
               </div>
+              <div className="filter-group" style={{ display: sfVisible('signInTime') }}>
+                <span className="fl-label">签入时间</span>
+                <RangePicker
+                  value={searchSignInTime as any}
+                  onChange={(dates) => setSearchSignInTime(dates as any)}
+                />
+              </div>
+              <div className="filter-group" style={{ display: sfVisible('stowableTime') }}>
+                <span className="fl-label">可配载时间</span>
+                <RangePicker
+                  value={searchStowableTime as any}
+                  onChange={(dates) => setSearchStowableTime(dates as any)}
+                />
+              </div>
               <div className="filter-group" style={{ display: sfVisible('firstStowableTime') }}>
                 <span className="fl-label">首次可配载时间</span>
                 <RangePicker
@@ -993,7 +1030,7 @@ const Component = forwardRef(function KanbanBoard(
                   addrAuditStatus: [{ value: '', label: '全部' }, { value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }],
                   billingResult: [{ value: '', label: '全部' }, ...BILLING_RESULTS.map(v => ({ value: v, label: v }))],
                 };
-                const isTimeField = ['createTime', 'auditTime', 'firstStowableTime'].includes(f.key);
+                const isTimeField = ['createTime', 'auditTime', 'signInTime', 'stowableTime', 'firstStowableTime'].includes(f.key);
                 const isSelect = selectYesNo || selectOptions[f.key];
                 return (
                   <div key={f.key} className="dv-form-item">
