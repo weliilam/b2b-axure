@@ -35,6 +35,7 @@ const MOCK_DATA_ALL = B2B_ORDERS.records;
 const PRODUCTS = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['销售产品']).filter(Boolean))];
 const COUNTRIES = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['目的国家']).filter(Boolean))];
 const BILLING_RESULTS = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['入账结果']).filter(Boolean))];
+const ORDER_STATUSES = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['订单状态']).filter(Boolean))];
 
 const { RangePicker } = DatePicker;
 
@@ -45,13 +46,7 @@ const STORAGE_KEY_ACTIVE = 'b2b_kanban_active_scenario';
 function loadScenarios(): Scenario[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SCENARIOS);
-    if (!raw) return [];
-    const scenarios: Scenario[] = JSON.parse(raw);
-    // 迁移：为旧场景补全新增的搜索字段
-    return scenarios.map(s => ({
-      ...s,
-      visibleSearchFieldKeys: [...new Set([...s.visibleSearchFieldKeys, ...ALL_SEARCH_FIELD_KEYS])],
-    }));
+    return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
@@ -645,265 +640,91 @@ const Component = forwardRef(function KanbanBoard(
           </div>
         </div>
 
-        {/* 搜索区域 */}
+        {/* 搜索区域 - 所有字段在同一个 flex 容器中流式排列 */}
         <div className="query-bar">
-          {/* 基础查询 - 第1行 */}
           <div className="filter-row">
             <div className="filter-group" style={{ display: sfVisible('waybillNo') }}>
               <span className="fl-label">单号</span>
-              <Input
-                placeholder="请输入"
-                value={searchWaybillNo}
-                onChange={(e) => setSearchWaybillNo(e.target.value)}
-                allowClear
-              />
+              <Input placeholder="请输入" value={searchWaybillNo} onChange={(e) => setSearchWaybillNo(e.target.value)} allowClear />
             </div>
             <div className="filter-group" style={{ display: sfVisible('b2bNo') }}>
               <span className="fl-label">B2B单号</span>
-              <Input
-                placeholder="请输入"
-                value={searchB2bNo}
-                onChange={(e) => setSearchB2bNo(e.target.value)}
-                allowClear
-              />
+              <Input placeholder="请输入" value={searchB2bNo} onChange={(e) => setSearchB2bNo(e.target.value)} allowClear />
             </div>
             <div className="filter-group" style={{ display: sfVisible('createTime') }}>
               <span className="fl-label">创建时间</span>
-              <RangePicker
-                value={searchCreateTime as any}
-                onChange={(dates) => setSearchCreateTime(dates as any)}
-              />
+              <RangePicker value={searchCreateTime as any} onChange={(dates) => setSearchCreateTime(dates as any)} />
             </div>
             <div className="filter-group" style={{ display: sfVisible('orderType') }}>
               <span className="fl-label">订单类型</span>
-              <Select
-                placeholder="全部"
-                value={searchOrderType}
-                onChange={setSearchOrderType}
-                allowClear
-                options={[
-                  { value: 'B2B', label: 'B2B' },
-                  { value: '整柜', label: '整柜' },
-                ]}
-              />
+              <Select placeholder="全部" value={searchOrderType} onChange={setSearchOrderType} allowClear options={[{ value: 'B2B', label: 'B2B' }, { value: '整柜', label: '整柜' }]} />
             </div>
             <div className="filter-group" style={{ display: sfVisible('orderStatus') }}>
               <span className="fl-label">订单状态</span>
-              <Select
-                mode="multiple"
-                placeholder="全部"
-                value={searchOrderStatus}
-                onChange={setSearchOrderStatus}
-                allowClear
-                options={[
-                  { value: '待客户确认', label: '待客户确认' },
-                  { value: '草稿', label: '草稿' },
-                  { value: '已预报', label: '已预报' },
-                  { value: '已收货', label: '已收货' },
-                  { value: '已出仓', label: '已出仓' },
-                  { value: '已签收', label: '已签收' },
-                  { value: '客户已确认', label: '客户已确认' },
-                  { value: '客户已驳回', label: '客户已驳回' },
-                  { value: '已退件', label: '已退件' },
-                  { value: '已理赔', label: '已理赔' },
-                  { value: '已删除', label: '已删除' },
-                  { value: '弃件', label: '弃件' },
-                ]}
-              />
+              <Select mode="multiple" placeholder="全部" value={searchOrderStatus} onChange={setSearchOrderStatus} allowClear options={ORDER_STATUSES.map(v => ({ value: v, label: v }))} />
             </div>
             <div className="filter-group" style={{ display: sfVisible('auditStatus') }}>
               <span className="fl-label">审核状态</span>
-              <Select
-                placeholder="全部"
-                value={searchAuditStatus}
-                onChange={setSearchAuditStatus}
-                allowClear
-                options={[
-                  { value: '审核通过', label: '审核通过' },
-                  { value: '待审核', label: '待审核' },
-                  { value: '审核不通过', label: '审核不通过' },
-                ]}
-              />
+              <Select placeholder="全部" value={searchAuditStatus} onChange={setSearchAuditStatus} allowClear options={[{ value: '审核通过', label: '审核通过' }, { value: '待审核', label: '待审核' }, { value: '审核不通过', label: '审核不通过' }]} />
             </div>
-          </div>
-
-          {/* 高级查询 - 第2行 */}
-          {expanded && (
-            <div className="filter-row" style={{ marginTop: 8 }}>
-              <div className="filter-group" style={{ display: sfVisible('product') }}>
-                <span className="fl-label">销售产品</span>
-                <Select
-                  placeholder="全部"
-                  value={searchProduct}
-                  onChange={setSearchProduct}
-                  allowClear
-                  options={PRODUCTS.map((p) => ({ value: p, label: p }))}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('country') }}>
-                <span className="fl-label">目的国家</span>
-                <Select
-                  placeholder="全部"
-                  value={searchCountry}
-                  onChange={setSearchCountry}
-                  allowClear
-                  options={COUNTRIES.map((c) => ({ value: c, label: c }))}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('channel') }}>
-                <span className="fl-label">渠道代码</span>
-                <Input
-                  placeholder="请输入"
-                  value={searchChannel}
-                  onChange={(e) => setSearchChannel(e.target.value)}
-                  allowClear
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('salesman') }}>
-                <span className="fl-label">业务员</span>
-                <Input
-                  placeholder="请输入"
-                  value={searchSalesman}
-                  onChange={(e) => setSearchSalesman(e.target.value)}
-                  allowClear
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('customerCode') }}>
-                <span className="fl-label">客户代码</span>
-                <Input
-                  placeholder="请输入"
-                  value={searchCustomerCode}
-                  onChange={(e) => setSearchCustomerCode(e.target.value)}
-                  allowClear
-                />
-              </div>
-            </div>
-          )}
-
-          {/* 高级查询 - 第3行 */}
-          {expanded && (
-            <div className="filter-row" style={{ marginTop: 8 }}>
-              <div className="filter-group" style={{ display: sfVisible('isCustoms') }}>
-                <span className="fl-label">是否报关件</span>
-                <Select
-                  placeholder="全部"
-                  value={searchIsCustoms}
-                  onChange={setSearchIsCustoms}
-                  allowClear
-                  options={[
-                    { value: '是', label: '是' },
-                    { value: '否', label: '否' },
-                  ]}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('addrType') }}>
-                <span className="fl-label">地址类型</span>
-                <Select
-                  placeholder="全部"
-                  value={searchAddrType}
-                  onChange={setSearchAddrType}
-                  allowClear
-                  options={[
-                    { value: '亚马逊地址', label: '亚马逊地址' },
-                    { value: '商业地址', label: '商业地址' },
-                  ]}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('isExtra') }}>
-                <span className="fl-label">是否加件</span>
-                <Select
-                  placeholder="全部"
-                  value={searchIsExtra}
-                  onChange={setSearchIsExtra}
-                  allowClear
-                  options={[
-                    { value: '是', label: '是' },
-                    { value: '否', label: '否' },
-                  ]}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('isValueAddDone') }}>
-                <span className="fl-label">是否完成增值服务</span>
-                <Select
-                  placeholder="全部"
-                  value={searchIsValueAddDone}
-                  onChange={setSearchIsValueAddDone}
-                  allowClear
-                  options={[
-                    { value: '是', label: '是' },
-                    { value: '否', label: '否' },
-                  ]}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('isStowable') }}>
-                <span className="fl-label">是否可配载</span>
-                <Select
-                  placeholder="全部"
-                  value={searchIsStowable}
-                  onChange={setSearchIsStowable}
-                  allowClear
-                  options={[
-                    { value: '是', label: '是' },
-                    { value: '否', label: '否' },
-                  ]}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('addrAuditStatus') }}>
-                <span className="fl-label">地址审核状态</span>
-                <Select
-                  placeholder="全部"
-                  value={searchAddrAuditStatus}
-                  onChange={setSearchAddrAuditStatus}
-                  allowClear
-                  options={[
-                    { value: '已审核', label: '已审核' },
-                    { value: '待审核', label: '待审核' },
-                  ]}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* 高级查询 - 第4行 */}
-          {expanded && (
-            <>
-              <div className="filter-row" style={{ marginTop: 8 }}>
+            {expanded && (
+              <>
+                <div className="filter-group" style={{ display: sfVisible('product') }}>
+                  <span className="fl-label">销售产品</span>
+                  <Select placeholder="全部" value={searchProduct} onChange={setSearchProduct} allowClear options={PRODUCTS.map((p) => ({ value: p, label: p }))} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('country') }}>
+                  <span className="fl-label">目的国家</span>
+                  <Select placeholder="全部" value={searchCountry} onChange={setSearchCountry} allowClear options={COUNTRIES.map((c) => ({ value: c, label: c }))} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('channel') }}>
+                  <span className="fl-label">渠道代码</span>
+                  <Input placeholder="请输入" value={searchChannel} onChange={(e) => setSearchChannel(e.target.value)} allowClear />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('salesman') }}>
+                  <span className="fl-label">业务员</span>
+                  <Input placeholder="请输入" value={searchSalesman} onChange={(e) => setSearchSalesman(e.target.value)} allowClear />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('customerCode') }}>
+                  <span className="fl-label">客户代码</span>
+                  <Input placeholder="请输入" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)} allowClear />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('isCustoms') }}>
+                  <span className="fl-label">是否报关件</span>
+                  <Select placeholder="全部" value={searchIsCustoms} onChange={setSearchIsCustoms} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('addrType') }}>
+                  <span className="fl-label">地址类型</span>
+                  <Select placeholder="全部" value={searchAddrType} onChange={setSearchAddrType} allowClear options={[{ value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }]} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('isExtra') }}>
+                  <span className="fl-label">是否加件</span>
+                  <Select placeholder="全部" value={searchIsExtra} onChange={setSearchIsExtra} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('isValueAddDone') }}>
+                  <span className="fl-label">是否完成增值服务</span>
+                  <Select placeholder="全部" value={searchIsValueAddDone} onChange={setSearchIsValueAddDone} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('isStowable') }}>
+                  <span className="fl-label">是否可配载</span>
+                  <Select placeholder="全部" value={searchIsStowable} onChange={setSearchIsStowable} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('addrAuditStatus') }}>
+                  <span className="fl-label">地址审核状态</span>
+                  <Select placeholder="全部" value={searchAddrAuditStatus} onChange={setSearchAddrAuditStatus} allowClear options={[{ value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }]} />
+                </div>
                 <div className="filter-group" style={{ display: sfVisible('isIntercept') }}>
                   <span className="fl-label">是否拦截</span>
-                  <Select
-                    placeholder="全部"
-                    value={searchIsIntercept}
-                    onChange={setSearchIsIntercept}
-                    allowClear
-                    options={[
-                      { value: '是', label: '是' },
-                      { value: '否', label: '否' },
-                    ]}
-                  />
+                  <Select placeholder="全部" value={searchIsIntercept} onChange={setSearchIsIntercept} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
                 </div>
                 <div className="filter-group" style={{ display: sfVisible('billingResult') }}>
                   <span className="fl-label">计费结果</span>
-                  <Select
-                    placeholder="全部"
-                    value={searchBillingResult}
-                    onChange={setSearchBillingResult}
-                    allowClear
-                    options={BILLING_RESULTS.map(v => ({ value: v, label: v }))}
-                  />
+                  <Select placeholder="全部" value={searchBillingResult} onChange={setSearchBillingResult} allowClear options={BILLING_RESULTS.map(v => ({ value: v, label: v }))} />
                 </div>
                 <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
                   <span className="fl-label">计费重</span>
-                  <Input
-                    placeholder="大于"
-                    value={searchBillingWeight}
-                    onChange={(e) => setSearchBillingWeight(e.target.value)}
-                    style={{ width: 80 }}
-                    prefix={<span style={{ color: '#999' }}>&gt;</span>}
-                    allowClear
-                  />
+                  <Input placeholder="大于" value={searchBillingWeight} onChange={(e) => setSearchBillingWeight(e.target.value)} prefix={<span style={{ color: '#999' }}>&gt;</span>} allowClear />
                 </div>
-              </div>
-              <div className="filter-row" style={{ marginTop: 8 }}>
                 <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
                   <span className="fl-label">审核时间</span>
                   <RangePicker value={searchAuditTime as any} onChange={(dates) => setSearchAuditTime(dates as any)} />
@@ -920,9 +741,9 @@ const Component = forwardRef(function KanbanBoard(
                   <span className="fl-label">首次可配载时间</span>
                   <RangePicker value={searchFirstStowableTime as any} onChange={(dates) => setSearchFirstStowableTime(dates as any)} />
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
 
           {/* 查询底部 */}
           <div className="query-footer">
@@ -986,6 +807,30 @@ const Component = forwardRef(function KanbanBoard(
         okText={editingScenario ? '保存场景' : '创建场景'}
         cancelText="取消"
         width={700}
+        footer={(_, { OkBtn, CancelBtn }) => (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              {editingScenario && (
+                <Button danger onClick={() => {
+                  Modal.confirm({
+                    title: '确认删除场景',
+                    content: `确定要删除场景"${editName}"吗？`,
+                    okText: '删除',
+                    okType: 'danger',
+                    cancelText: '取消',
+                    onOk: () => { deleteScenario(editingScenario.id); setEditModalOpen(false); setEditingScenario(null); },
+                  });
+                }}>
+                  删除场景
+                </Button>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <CancelBtn />
+              <OkBtn />
+            </div>
+          </div>
+        )}
       >
         <div className="edit-scenario-form">
           <div className="edit-scenario-section">
@@ -1028,7 +873,7 @@ const Component = forwardRef(function KanbanBoard(
                 const selectYesNo = ['isCustoms', 'isExtra', 'isValueAddDone', 'isStowable', 'isIntercept'].includes(f.key);
                 const selectOptions: Record<string, { value: string; label: string }[]> = {
                   orderType: [{ value: '', label: '全部' }, { value: 'B2B', label: 'B2B' }, { value: '整柜', label: '整柜' }],
-                  orderStatus: [{ value: '', label: '全部' }, { value: '待客户确认', label: '待客户确认' }, { value: '草稿', label: '草稿' }, { value: '已预报', label: '已预报' }, { value: '已收货', label: '已收货' }, { value: '已出仓', label: '已出仓' }, { value: '已签收', label: '已签收' }, { value: '客户已确认', label: '客户已确认' }, { value: '客户已驳回', label: '客户已驳回' }, { value: '已退件', label: '已退件' }, { value: '已理赔', label: '已理赔' }, { value: '已删除', label: '已删除' }, { value: '弃件', label: '弃件' }],
+                  orderStatus: [{ value: '', label: '全部' }, ...ORDER_STATUSES.map(v => ({ value: v, label: v }))],
                   auditStatus: [{ value: '', label: '全部' }, { value: '审核通过', label: '审核通过' }, { value: '待审核', label: '待审核' }, { value: '审核不通过', label: '审核不通过' }],
                   product: [{ value: '', label: '全部' }, ...PRODUCTS.map(p => ({ value: p, label: p }))],
                   country: [{ value: '', label: '全部' }, ...COUNTRIES.map(c => ({ value: c, label: c }))],
