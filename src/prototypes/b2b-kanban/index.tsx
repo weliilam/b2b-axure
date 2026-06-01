@@ -82,6 +82,7 @@ interface ScenarioSearchValues {
   addrAuditStatus: string | undefined;
   isIntercept: string | undefined;
   billingResult: string | undefined;
+  billingWeight: string | undefined;
   createTime: string[] | null;
   auditTime: string[] | null;
   firstStowableTime: string[] | null;
@@ -117,6 +118,7 @@ const SEARCH_FIELD_DEFS = [
   { key: 'addrAuditStatus', label: '地址审核状态' },
   { key: 'isIntercept', label: '是否拦截' },
   { key: 'billingResult', label: '计费结果' },
+  { key: 'billingWeight', label: '计费重>' },
 ];
 const ALL_SEARCH_FIELD_KEYS = SEARCH_FIELD_DEFS.map(d => d.key);
 
@@ -201,6 +203,7 @@ const Component = forwardRef(function KanbanBoard(
   const [searchAddrAuditStatus, setSearchAddrAuditStatus] = useState<string | undefined>(undefined);
   const [searchIsIntercept, setSearchIsIntercept] = useState<string | undefined>(undefined);
   const [searchBillingResult, setSearchBillingResult] = useState<string | undefined>(undefined);
+  const [searchBillingWeight, setSearchBillingWeight] = useState('');
   const [searchAuditTime, setSearchAuditTime] = useState<[any, any] | null>(null);
   const [searchFirstStowableTime, setSearchFirstStowableTime] = useState<[any, any] | null>(null);
 
@@ -219,7 +222,7 @@ const Component = forwardRef(function KanbanBoard(
     channel: '', salesman: '', customerCode: '', isCustoms: undefined,
     addrType: undefined, isExtra: undefined, isValueAddDone: undefined,
     isStowable: undefined, addrAuditStatus: undefined, isIntercept: undefined,
-    billingResult: undefined, createTime: null, auditTime: null, firstStowableTime: null,
+    billingResult: undefined, billingWeight: undefined, createTime: null, auditTime: null, firstStowableTime: null,
   });
   const [editColumnKeys, setEditColumnKeys] = useState<string[]>(DEFAULT_ALL_COLUMN_KEYS);
 
@@ -246,6 +249,7 @@ const Component = forwardRef(function KanbanBoard(
     addrAuditStatus: searchAddrAuditStatus,
     isIntercept: searchIsIntercept,
     billingResult: searchBillingResult,
+    billingWeight: searchBillingWeight || undefined,
     createTime: searchCreateTime ? [String(searchCreateTime[0]), String(searchCreateTime[1])] : null,
     auditTime: searchAuditTime ? [String(searchAuditTime[0]), String(searchAuditTime[1])] : null,
     firstStowableTime: searchFirstStowableTime ? [String(searchFirstStowableTime[0]), String(searchFirstStowableTime[1])] : null,
@@ -254,7 +258,7 @@ const Component = forwardRef(function KanbanBoard(
     searchAuditStatus, searchProduct, searchCountry, searchChannel,
     searchSalesman, searchCustomerCode, searchIsCustoms, searchAddrType,
     searchIsExtra, searchIsValueAddDone, searchIsStowable, searchAddrAuditStatus,
-    searchIsIntercept, searchBillingResult, searchCreateTime, searchAuditTime, searchFirstStowableTime,
+    searchIsIntercept, searchBillingResult, searchBillingWeight, searchCreateTime, searchAuditTime, searchFirstStowableTime,
   ]);
 
   const applyScenario = useCallback((s: Scenario) => {
@@ -277,6 +281,7 @@ const Component = forwardRef(function KanbanBoard(
     setSearchAddrAuditStatus(v.addrAuditStatus);
     setSearchIsIntercept(v.isIntercept);
     setSearchBillingResult(v.billingResult);
+    setSearchBillingWeight(v.billingWeight || '');
     setSearchCreateTime(v.createTime ? [v.createTime[0] as any, v.createTime[1] as any] : null);
     setSearchAuditTime(v.auditTime ? [v.auditTime[0] as any, v.auditTime[1] as any] : null);
     setSearchFirstStowableTime(v.firstStowableTime ? [v.firstStowableTime[0] as any, v.firstStowableTime[1] as any] : null);
@@ -317,6 +322,7 @@ const Component = forwardRef(function KanbanBoard(
     setSearchAddrAuditStatus(vals.addrAuditStatus);
     setSearchIsIntercept(vals.isIntercept);
     setSearchBillingResult(vals.billingResult);
+    setSearchBillingWeight(vals.billingWeight || '');
     setSearchCreateTime(vals.createTime ? [vals.createTime[0] as any, vals.createTime[1] as any] : null);
     setSearchAuditTime(vals.auditTime ? [vals.auditTime[0] as any, vals.auditTime[1] as any] : null);
     setSearchFirstStowableTime(vals.firstStowableTime ? [vals.firstStowableTime[0] as any, vals.firstStowableTime[1] as any] : null);
@@ -430,6 +436,7 @@ const Component = forwardRef(function KanbanBoard(
     setSearchAddrAuditStatus(undefined);
     setSearchIsIntercept(undefined);
     setSearchBillingResult(undefined);
+    setSearchBillingWeight('');
     setSearchAuditTime(null);
     setSearchFirstStowableTime(null);
   };
@@ -538,6 +545,10 @@ const Component = forwardRef(function KanbanBoard(
       if (searchAddrAuditStatus && record['地址审核状态'] !== searchAddrAuditStatus) return false;
       if (searchIsIntercept !== undefined && record['是否拦截'] !== searchIsIntercept) return false;
       if (searchBillingResult && record['入账结果'] !== searchBillingResult) return false;
+      if (searchBillingWeight && !isNaN(Number(searchBillingWeight))) {
+        const w = parseFloat(record['计费重'] || '0');
+        if (w <= Number(searchBillingWeight)) return false;
+      }
       return true;
     });
   }, [
@@ -545,7 +556,7 @@ const Component = forwardRef(function KanbanBoard(
     searchAuditStatus, searchProduct, searchCountry, searchChannel, searchSalesman,
     searchCustomerCode, searchIsCustoms, searchAddrType, searchIsExtra,
     searchIsValueAddDone, searchIsStowable, searchAddrAuditStatus, searchIsIntercept,
-    searchBillingResult,
+    searchBillingResult, searchBillingWeight,
   ]);
 
   return (
@@ -841,6 +852,17 @@ const Component = forwardRef(function KanbanBoard(
                     { value: '1360 RMB', label: '1360 RMB' },
                     { value: '2700 RMB', label: '2700 RMB' },
                   ]}
+                />
+              </div>
+              <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
+                <span className="fl-label">计费重</span>
+                <Input
+                  placeholder="大于"
+                  value={searchBillingWeight}
+                  onChange={(e) => setSearchBillingWeight(e.target.value)}
+                  style={{ width: 80 }}
+                  prefix={<span style={{ color: '#999' }}>&gt;</span>}
+                  allowClear
                 />
               </div>
               <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
