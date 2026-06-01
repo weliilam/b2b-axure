@@ -549,6 +549,14 @@ const Component = forwardRef(function KanbanBoard(
     visibleSearchFieldKeys.includes(key) ? undefined : 'none' as React.CSSProperties['display']
   , [visibleSearchFieldKeys]);
 
+  // 时间范围过滤辅助函数
+  const matchTimeRange = (timeStr: string, range: [any, any] | null): boolean => {
+    if (!range || !range[0] || !range[1]) return true;
+    const t = new Date(timeStr).getTime();
+    if (isNaN(t)) return true;
+    return t >= range[0].toDate().getTime() && t <= range[1].toDate().getTime();
+  };
+
   // 搜索过滤
   const filteredData = React.useMemo(() => {
     return MOCK_DATA_ALL.filter((record: Record<string, string>) => {
@@ -574,6 +582,11 @@ const Component = forwardRef(function KanbanBoard(
         const w = parseFloat(record['计费重'] || '0');
         if (w <= Number(searchBillingWeight)) return false;
       }
+      if (searchCreateTime && !matchTimeRange(record['创建时间'], searchCreateTime)) return false;
+      if (searchAuditTime && !matchTimeRange(record['审核时间'], searchAuditTime)) return false;
+      if (searchSignInTime && !matchTimeRange(record['签入时间'], searchSignInTime)) return false;
+      if (searchStowableTime && !matchTimeRange(record['可配载时间'], searchStowableTime)) return false;
+      if (searchFirstStowableTime && !matchTimeRange(record['可配载时间'], searchFirstStowableTime)) return false;
       return true;
     });
   }, [
@@ -581,7 +594,8 @@ const Component = forwardRef(function KanbanBoard(
     searchAuditStatus, searchProduct, searchCountry, searchChannel, searchSalesman,
     searchCustomerCode, searchIsCustoms, searchAddrType, searchIsExtra,
     searchIsValueAddDone, searchIsStowable, searchAddrAuditStatus, searchIsIntercept,
-    searchBillingResult, searchBillingWeight,
+    searchBillingResult, searchBillingWeight, searchCreateTime, searchAuditTime,
+    searchSignInTime, searchStowableTime, searchFirstStowableTime,
   ]);
 
   return (
@@ -852,70 +866,62 @@ const Component = forwardRef(function KanbanBoard(
 
           {/* 高级查询 - 第4行 */}
           {expanded && (
-            <div className="filter-row" style={{ marginTop: 8 }}>
-              <div className="filter-group" style={{ display: sfVisible('isIntercept') }}>
-                <span className="fl-label">是否拦截</span>
-                <Select
-                  placeholder="全部"
-                  value={searchIsIntercept}
-                  onChange={setSearchIsIntercept}
-                  allowClear
-                  options={[
-                    { value: '是', label: '是' },
-                    { value: '否', label: '否' },
-                  ]}
-                />
+            <>
+              <div className="filter-row" style={{ marginTop: 8 }}>
+                <div className="filter-group" style={{ display: sfVisible('isIntercept') }}>
+                  <span className="fl-label">是否拦截</span>
+                  <Select
+                    placeholder="全部"
+                    value={searchIsIntercept}
+                    onChange={setSearchIsIntercept}
+                    allowClear
+                    options={[
+                      { value: '是', label: '是' },
+                      { value: '否', label: '否' },
+                    ]}
+                  />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('billingResult') }}>
+                  <span className="fl-label">计费结果</span>
+                  <Select
+                    placeholder="全部"
+                    value={searchBillingResult}
+                    onChange={setSearchBillingResult}
+                    allowClear
+                    options={BILLING_RESULTS.map(v => ({ value: v, label: v }))}
+                  />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
+                  <span className="fl-label">计费重</span>
+                  <Input
+                    placeholder="大于"
+                    value={searchBillingWeight}
+                    onChange={(e) => setSearchBillingWeight(e.target.value)}
+                    style={{ width: 80 }}
+                    prefix={<span style={{ color: '#999' }}>&gt;</span>}
+                    allowClear
+                  />
+                </div>
               </div>
-              <div className="filter-group" style={{ display: sfVisible('billingResult') }}>
-                <span className="fl-label">计费结果</span>
-                <Select
-                  placeholder="全部"
-                  value={searchBillingResult}
-                  onChange={setSearchBillingResult}
-                  allowClear
-                  options={BILLING_RESULTS.map(v => ({ value: v, label: v }))}
-                />
+              <div className="filter-row" style={{ marginTop: 8 }}>
+                <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
+                  <span className="fl-label">审核时间</span>
+                  <RangePicker value={searchAuditTime as any} onChange={(dates) => setSearchAuditTime(dates as any)} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('signInTime') }}>
+                  <span className="fl-label">签入时间</span>
+                  <RangePicker value={searchSignInTime as any} onChange={(dates) => setSearchSignInTime(dates as any)} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('stowableTime') }}>
+                  <span className="fl-label">可配载时间</span>
+                  <RangePicker value={searchStowableTime as any} onChange={(dates) => setSearchStowableTime(dates as any)} />
+                </div>
+                <div className="filter-group" style={{ display: sfVisible('firstStowableTime') }}>
+                  <span className="fl-label">首次可配载时间</span>
+                  <RangePicker value={searchFirstStowableTime as any} onChange={(dates) => setSearchFirstStowableTime(dates as any)} />
+                </div>
               </div>
-              <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
-                <span className="fl-label">计费重</span>
-                <Input
-                  placeholder="大于"
-                  value={searchBillingWeight}
-                  onChange={(e) => setSearchBillingWeight(e.target.value)}
-                  style={{ width: 80 }}
-                  prefix={<span style={{ color: '#999' }}>&gt;</span>}
-                  allowClear
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
-                <span className="fl-label">审核时间</span>
-                <RangePicker
-                  value={searchAuditTime as any}
-                  onChange={(dates) => setSearchAuditTime(dates as any)}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('signInTime') }}>
-                <span className="fl-label">签入时间</span>
-                <RangePicker
-                  value={searchSignInTime as any}
-                  onChange={(dates) => setSearchSignInTime(dates as any)}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('stowableTime') }}>
-                <span className="fl-label">可配载时间</span>
-                <RangePicker
-                  value={searchStowableTime as any}
-                  onChange={(dates) => setSearchStowableTime(dates as any)}
-                />
-              </div>
-              <div className="filter-group" style={{ display: sfVisible('firstStowableTime') }}>
-                <span className="fl-label">首次可配载时间</span>
-                <RangePicker
-                  value={searchFirstStowableTime as any}
-                  onChange={(dates) => setSearchFirstStowableTime(dates as any)}
-                />
-              </div>
-            </div>
+            </>
           )}
 
           {/* 查询底部 */}

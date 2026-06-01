@@ -65,7 +65,7 @@
 
 .filter-row {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 6px;
 }
