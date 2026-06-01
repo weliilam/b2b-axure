@@ -34,6 +34,7 @@ import B2B_ORDERS from '../../database/b2b-orders.json';
 const MOCK_DATA_ALL = B2B_ORDERS.records;
 const PRODUCTS = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['销售产品']).filter(Boolean))];
 const COUNTRIES = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['目的国家']).filter(Boolean))];
+const BILLING_RESULTS = [...new Set(MOCK_DATA_ALL.map((r: Record<string, string>) => r['入账结果']).filter(Boolean))];
 
 const { RangePicker } = DatePicker;
 
@@ -499,7 +500,8 @@ const Component = forwardRef(function KanbanBoard(
         : ['创建时间', '审核时间', '签入时间', '签出时间', '签收时间', '可配载时间', '费用确认时间', '到仓时间', '揽收时间'].includes(field) ? 155
         : ['销售产品', '服务渠道名称', '首次到货网点', '操作仓', '计费签入网点', '进口商公司名称', '发件人详细地址', '收件人信息（地址、名称、电话）'].includes(field) ? 130
         : field.includes('备注') || field.includes('地址') ? 120 : 90;
-      return { title: field, dataIndex: field, key: field, width: minW, ellipsis: true };
+      const title = field === '入账结果' ? '计费结果' : field;
+      return { title, dataIndex: field, key: field, width: minW, ellipsis: true };
     }),
     {
       title: '操作', key: '操作', width: 80, fixed: 'right' as const, align: 'center' as const,
@@ -848,10 +850,7 @@ const Component = forwardRef(function KanbanBoard(
                   value={searchBillingResult}
                   onChange={setSearchBillingResult}
                   allowClear
-                  options={[
-                    { value: '1360 RMB', label: '1360 RMB' },
-                    { value: '2700 RMB', label: '2700 RMB' },
-                  ]}
+                  options={BILLING_RESULTS.map(v => ({ value: v, label: v }))}
                 />
               </div>
               <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
@@ -992,7 +991,7 @@ const Component = forwardRef(function KanbanBoard(
                   country: [{ value: '', label: '全部' }, ...COUNTRIES.map(c => ({ value: c, label: c }))],
                   addrType: [{ value: '', label: '全部' }, { value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }],
                   addrAuditStatus: [{ value: '', label: '全部' }, { value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }],
-                  billingResult: [{ value: '', label: '全部' }, { value: '1360 RMB', label: '1360 RMB' }, { value: '2700 RMB', label: '2700 RMB' }],
+                  billingResult: [{ value: '', label: '全部' }, ...BILLING_RESULTS.map(v => ({ value: v, label: v }))],
                 };
                 const isTimeField = ['createTime', 'auditTime', 'firstStowableTime'].includes(f.key);
                 const isSelect = selectYesNo || selectOptions[f.key];
