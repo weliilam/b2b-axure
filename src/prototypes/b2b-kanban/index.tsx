@@ -16,7 +16,7 @@ import {
   Breadcrumb, message,
 } from 'antd';
 import {
-  SearchOutlined, ReloadOutlined,
+  SearchOutlined, ReloadOutlined, DownOutlined,
   SettingOutlined,
   ArrowUpOutlined, ArrowDownOutlined, CloseOutlined, PlusOutlined,
 } from '@ant-design/icons';
@@ -641,9 +641,9 @@ const Component = forwardRef(function KanbanBoard(
           </div>
         </div>
 
-        {/* 搜索区域 - 所有字段由场景控制显示 */}
+        {/* 搜索区域 */}
         <div className="query-bar">
-          <div className="filter-row">
+          <div className="filter-row" style={{ maxHeight: expanded ? 'none' : '110px', overflow: 'hidden', position: 'relative' }}>
             <div className="filter-group" style={{ display: sfVisible('waybillNo') }}>
               <span className="fl-label">单号</span>
               <Input placeholder="请输入" value={searchWaybillNo} onChange={(e) => setSearchWaybillNo(e.target.value)} allowClear />
@@ -740,6 +740,12 @@ const Component = forwardRef(function KanbanBoard(
               <span className="fl-label">首次可配载时间</span>
               <RangePicker value={searchFirstStowableTime as any} onChange={(dates) => setSearchFirstStowableTime(dates as any)} />
             </div>
+
+          </div>
+          <div className="query-footer" style={{ textAlign: 'center', paddingBottom: 4 }}>
+            <span onClick={() => setExpanded(!expanded)} style={{ cursor: 'pointer', color: '#1890ff', fontSize: 13, userSelect: 'none' }}>
+              {expanded ? '收起' : '展开全部'} <DownOutlined style={{ fontSize: 10, marginLeft: 2, transform: expanded ? 'rotate(180deg)' : undefined, transition: 'transform 0.2s' }} />
+            </span>
           </div>
         </div>
 
