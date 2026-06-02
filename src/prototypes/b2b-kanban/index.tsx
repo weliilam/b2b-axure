@@ -16,7 +16,7 @@ import {
   Breadcrumb, message,
 } from 'antd';
 import {
-  SearchOutlined, ReloadOutlined, DownOutlined,
+  SearchOutlined, DownOutlined,
   SettingOutlined,
   ArrowUpOutlined, ArrowDownOutlined, CloseOutlined, PlusOutlined,
 } from '@ant-design/icons';
@@ -752,14 +752,21 @@ const Component = forwardRef(function KanbanBoard(
         {/* 工具栏 */}
         <div className="toolbar">
           <div className="toolbar-left">
-            <Button type="primary" icon={<ReloadOutlined />}>刷新</Button>
+            <Button size="small" type="primary">批量审核</Button>
+            <Button size="small" type="primary">撤销审核</Button>
+            <Button size="small" type="primary">批量修改额外服务</Button>
+            <Button size="small" type="primary">批量修改费用</Button>
+            <Button size="small" type="primary">确认费用</Button>
+            <Button size="small" type="primary">拦截</Button>
+            <Button size="small" type="primary">取消拦截</Button>
+            <Button size="small" type="primary">删除</Button>
             {activeScenario && (
               <span className="active-scenario-label">当前场景: {activeScenario.name}</span>
             )}
           </div>
           <div className="toolbar-right">
-            <Button type="primary" icon={<SearchOutlined />}>查询</Button>
-            <Button onClick={resetSearch}>重置</Button>
+            <Button size="small" type="primary" icon={<SearchOutlined />}>查询</Button>
+            <Button size="small" onClick={resetSearch}>重置</Button>
           </div>
         </div>
 
