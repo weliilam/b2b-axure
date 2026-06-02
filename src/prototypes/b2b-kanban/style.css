@@ -71,8 +71,8 @@
 }
 
 .filter-group {
-  flex: 0 0 200px;
-  width: 200px;
+  flex: 1 1 120px;
+  min-width: 100px;
   max-width: 200px;
   display: inline-flex;
   flex-direction: column;
@@ -309,6 +309,20 @@
 .column-grid-tag:hover {
   background: #eef3ff;
   border-color: #1D4CD2;
+}
+
+/* 拖拽状态 */
+.column-grid-tag.dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  background: #f0f2f5;
+}
+
+.column-grid-tag.drag-over {
+  border-color: #1D4CD2;
+  background: #e6f0ff;
+  box-shadow: 0 0 0 2px rgba(29, 76, 210, 0.15);
+  transform: scale(1.02);
 }
 
 .cgt-index {

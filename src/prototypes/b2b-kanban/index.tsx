@@ -9,14 +9,14 @@
  * - /rules/axure-api-guide.md
  */
 
-import React, { useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
 import './style.css';
 import {
   Table, Button, Input, Select, DatePicker, Modal,
   Breadcrumb, message,
 } from 'antd';
 import {
-  SearchOutlined, ReloadOutlined, DownOutlined, UpOutlined,
+  SearchOutlined, ReloadOutlined,
   SettingOutlined,
   ArrowUpOutlined, ArrowDownOutlined, CloseOutlined, PlusOutlined,
 } from '@ant-design/icons';
@@ -432,6 +432,7 @@ const Component = forwardRef(function KanbanBoard(
   }, []);
 
   const hideableEditColumns = DEFAULT_ALL_COLUMN_KEYS.filter(k => !editColumnKeys.includes(k));
+  const dragItem = useRef<number | null>(null);
 
   const resetSearch = () => {
     setSearchWaybillNo('');
@@ -640,7 +641,7 @@ const Component = forwardRef(function KanbanBoard(
           </div>
         </div>
 
-        {/* 搜索区域 - 所有字段在同一个 flex 容器中流式排列 */}
+        {/* 搜索区域 - 所有字段由场景控制显示 */}
         <div className="query-bar">
           <div className="filter-row">
             <div className="filter-group" style={{ display: sfVisible('waybillNo') }}>
@@ -667,89 +668,78 @@ const Component = forwardRef(function KanbanBoard(
               <span className="fl-label">审核状态</span>
               <Select placeholder="全部" value={searchAuditStatus} onChange={setSearchAuditStatus} allowClear options={[{ value: '审核通过', label: '审核通过' }, { value: '待审核', label: '待审核' }, { value: '审核不通过', label: '审核不通过' }]} />
             </div>
-            {expanded && (
-              <>
-                <div className="filter-group" style={{ display: sfVisible('product') }}>
-                  <span className="fl-label">销售产品</span>
-                  <Select placeholder="全部" value={searchProduct} onChange={setSearchProduct} allowClear options={PRODUCTS.map((p) => ({ value: p, label: p }))} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('country') }}>
-                  <span className="fl-label">目的国家</span>
-                  <Select placeholder="全部" value={searchCountry} onChange={setSearchCountry} allowClear options={COUNTRIES.map((c) => ({ value: c, label: c }))} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('channel') }}>
-                  <span className="fl-label">渠道代码</span>
-                  <Input placeholder="请输入" value={searchChannel} onChange={(e) => setSearchChannel(e.target.value)} allowClear />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('salesman') }}>
-                  <span className="fl-label">业务员</span>
-                  <Input placeholder="请输入" value={searchSalesman} onChange={(e) => setSearchSalesman(e.target.value)} allowClear />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('customerCode') }}>
-                  <span className="fl-label">客户代码</span>
-                  <Input placeholder="请输入" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)} allowClear />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('isCustoms') }}>
-                  <span className="fl-label">是否报关件</span>
-                  <Select placeholder="全部" value={searchIsCustoms} onChange={setSearchIsCustoms} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('addrType') }}>
-                  <span className="fl-label">地址类型</span>
-                  <Select placeholder="全部" value={searchAddrType} onChange={setSearchAddrType} allowClear options={[{ value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('isExtra') }}>
-                  <span className="fl-label">是否加件</span>
-                  <Select placeholder="全部" value={searchIsExtra} onChange={setSearchIsExtra} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('isValueAddDone') }}>
-                  <span className="fl-label">是否完成增值服务</span>
-                  <Select placeholder="全部" value={searchIsValueAddDone} onChange={setSearchIsValueAddDone} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('isStowable') }}>
-                  <span className="fl-label">是否可配载</span>
-                  <Select placeholder="全部" value={searchIsStowable} onChange={setSearchIsStowable} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('addrAuditStatus') }}>
-                  <span className="fl-label">地址审核状态</span>
-                  <Select placeholder="全部" value={searchAddrAuditStatus} onChange={setSearchAddrAuditStatus} allowClear options={[{ value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('isIntercept') }}>
-                  <span className="fl-label">是否拦截</span>
-                  <Select placeholder="全部" value={searchIsIntercept} onChange={setSearchIsIntercept} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('billingResult') }}>
-                  <span className="fl-label">计费结果</span>
-                  <Select placeholder="全部" value={searchBillingResult} onChange={setSearchBillingResult} allowClear options={BILLING_RESULTS.map(v => ({ value: v, label: v }))} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
-                  <span className="fl-label">计费重</span>
-                  <Input placeholder="大于" value={searchBillingWeight} onChange={(e) => setSearchBillingWeight(e.target.value)} prefix={<span style={{ color: '#999' }}>&gt;</span>} allowClear />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
-                  <span className="fl-label">审核时间</span>
-                  <RangePicker value={searchAuditTime as any} onChange={(dates) => setSearchAuditTime(dates as any)} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('signInTime') }}>
-                  <span className="fl-label">签入时间</span>
-                  <RangePicker value={searchSignInTime as any} onChange={(dates) => setSearchSignInTime(dates as any)} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('stowableTime') }}>
-                  <span className="fl-label">可配载时间</span>
-                  <RangePicker value={searchStowableTime as any} onChange={(dates) => setSearchStowableTime(dates as any)} />
-                </div>
-                <div className="filter-group" style={{ display: sfVisible('firstStowableTime') }}>
-                  <span className="fl-label">首次可配载时间</span>
-                  <RangePicker value={searchFirstStowableTime as any} onChange={(dates) => setSearchFirstStowableTime(dates as any)} />
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* 查询底部 */}
-          <div className="query-footer">
-            <Button type="link" style={{ fontSize: 12, color: '#1890ff', padding: 0 }} onClick={() => setExpanded(!expanded)}>
-              {expanded ? '收起' : '展开'}高级查询 {expanded ? <UpOutlined /> : <DownOutlined />}
-            </Button>
+            <div className="filter-group" style={{ display: sfVisible('product') }}>
+              <span className="fl-label">销售产品</span>
+              <Select placeholder="全部" value={searchProduct} onChange={setSearchProduct} allowClear options={PRODUCTS.map((p) => ({ value: p, label: p }))} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('country') }}>
+              <span className="fl-label">目的国家</span>
+              <Select placeholder="全部" value={searchCountry} onChange={setSearchCountry} allowClear options={COUNTRIES.map((c) => ({ value: c, label: c }))} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('channel') }}>
+              <span className="fl-label">渠道代码</span>
+              <Input placeholder="请输入" value={searchChannel} onChange={(e) => setSearchChannel(e.target.value)} allowClear />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('salesman') }}>
+              <span className="fl-label">业务员</span>
+              <Input placeholder="请输入" value={searchSalesman} onChange={(e) => setSearchSalesman(e.target.value)} allowClear />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('customerCode') }}>
+              <span className="fl-label">客户代码</span>
+              <Input placeholder="请输入" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)} allowClear />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('isCustoms') }}>
+              <span className="fl-label">是否报关件</span>
+              <Select placeholder="全部" value={searchIsCustoms} onChange={setSearchIsCustoms} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('addrType') }}>
+              <span className="fl-label">地址类型</span>
+              <Select placeholder="全部" value={searchAddrType} onChange={setSearchAddrType} allowClear options={[{ value: '亚马逊地址', label: '亚马逊地址' }, { value: '私人地址', label: '私人地址' }, { value: '第三方地址', label: '第三方地址' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('isExtra') }}>
+              <span className="fl-label">是否加件</span>
+              <Select placeholder="全部" value={searchIsExtra} onChange={setSearchIsExtra} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('isValueAddDone') }}>
+              <span className="fl-label">是否完成增值服务</span>
+              <Select placeholder="全部" value={searchIsValueAddDone} onChange={setSearchIsValueAddDone} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('isStowable') }}>
+              <span className="fl-label">是否可配载</span>
+              <Select placeholder="全部" value={searchIsStowable} onChange={setSearchIsStowable} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('addrAuditStatus') }}>
+              <span className="fl-label">地址审核状态</span>
+              <Select placeholder="全部" value={searchAddrAuditStatus} onChange={setSearchAddrAuditStatus} allowClear options={[{ value: '已审核', label: '已审核' }, { value: '待审核', label: '待审核' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('isIntercept') }}>
+              <span className="fl-label">是否拦截</span>
+              <Select placeholder="全部" value={searchIsIntercept} onChange={setSearchIsIntercept} allowClear options={[{ value: '是', label: '是' }, { value: '否', label: '否' }]} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('billingResult') }}>
+              <span className="fl-label">计费结果</span>
+              <Select placeholder="全部" value={searchBillingResult} onChange={setSearchBillingResult} allowClear options={BILLING_RESULTS.map(v => ({ value: v, label: v }))} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('billingWeight') }}>
+              <span className="fl-label">计费重</span>
+              <Input placeholder="大于" value={searchBillingWeight} onChange={(e) => setSearchBillingWeight(e.target.value)} prefix={<span style={{ color: '#999' }}>&gt;</span>} allowClear />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('auditTime') }}>
+              <span className="fl-label">审核时间</span>
+              <RangePicker value={searchAuditTime as any} onChange={(dates) => setSearchAuditTime(dates as any)} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('signInTime') }}>
+              <span className="fl-label">签入时间</span>
+              <RangePicker value={searchSignInTime as any} onChange={(dates) => setSearchSignInTime(dates as any)} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('stowableTime') }}>
+              <span className="fl-label">可配载时间</span>
+              <RangePicker value={searchStowableTime as any} onChange={(dates) => setSearchStowableTime(dates as any)} />
+            </div>
+            <div className="filter-group" style={{ display: sfVisible('firstStowableTime') }}>
+              <span className="fl-label">首次可配载时间</span>
+              <RangePicker value={searchFirstStowableTime as any} onChange={(dates) => setSearchFirstStowableTime(dates as any)} />
+            </div>
           </div>
         </div>
 
@@ -764,7 +754,6 @@ const Component = forwardRef(function KanbanBoard(
           <div className="toolbar-right">
             <Button type="primary" icon={<SearchOutlined />}>查询</Button>
             <Button onClick={resetSearch}>重置</Button>
-            <span className="total-text">共 {filteredData.length} 条</span>
           </div>
         </div>
 
@@ -933,8 +922,37 @@ const Component = forwardRef(function KanbanBoard(
                 const colDef = ALL_COLUMNS.find(c => c.key === key);
                 if (!colDef) return null;
                 return (
-                  <span key={key} className="column-grid-tag">
-                    <span className="cgt-index">{index + 1}</span>
+                  <span
+                    key={key}
+                    className={`column-grid-tag${dragItem.current === index ? ' dragging' : ''}`}
+                    draggable
+                    onDragStart={() => { dragItem.current = index; }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      // Toggle visual feedback on drop target
+                      document.querySelectorAll('.column-grid-tag.drag-over').forEach(el => el.classList.remove('drag-over'));
+                      (e.currentTarget as HTMLElement).classList.add('drag-over');
+                    }}
+                    onDragLeave={(e) => { (e.currentTarget as HTMLElement).classList.remove('drag-over'); }}
+                    onDrop={() => {
+                      document.querySelectorAll('.column-grid-tag.drag-over').forEach(el => el.classList.remove('drag-over'));
+                      if (dragItem.current === null || dragItem.current === index) return;
+                      const from = dragItem.current;
+                      setEditColumnKeys(prev => {
+                        const next = [...prev];
+                        const [moved] = next.splice(from, 1);
+                        next.splice(index, 0, moved);
+                        return next;
+                      });
+                      dragItem.current = null;
+                    }}
+                    onDragEnd={() => {
+                      document.querySelectorAll('.column-grid-tag.drag-over').forEach(el => el.classList.remove('drag-over'));
+                      dragItem.current = null;
+                    }}
+                    style={{ cursor: 'grab' }}
+                  >
+                    <span className="cgt-index"><span style={{ cursor: 'grab', fontSize: 12, color: '#bbb' }}>⠿</span></span>
                     <span className="cgt-name">{colDef.title}</span>
                     <span className="cgt-actions">
                       <ArrowUpOutlined className={`cgt-btn ${index === 0 ? 'disabled' : ''}`} onClick={() => moveEditColumn(index, 'up')} />
