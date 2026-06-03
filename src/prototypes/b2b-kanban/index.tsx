@@ -100,7 +100,18 @@ interface Scenario {
   visibleSearchFieldKeys: string[];
 }
 
-let scenarioIdCounter = 1;
+let scenarioIdCounter: number;
+function getNextScenarioId(): string {
+  if (scenarioIdCounter === undefined) {
+    const existing = loadScenarios();
+    const nums = existing.map(s => {
+      const m = s.id.match(/^scenario_(\d+)$/);
+      return m ? parseInt(m[1], 10) : 0;
+    });
+    scenarioIdCounter = nums.length > 0 ? Math.max(...nums) + 1 : 1;
+  }
+  return `scenario_${scenarioIdCounter++}`;
+}
 const DEFAULT_ALL_COLUMN_KEYS = MOCK_FIELDS;
 
 const SEARCH_FIELD_DEFS = [
@@ -224,6 +235,7 @@ const Component = forwardRef(function KanbanBoard(
   const [visibleColumnKeys, setVisibleColumnKeys] = useState<string[]>(DEFAULT_ALL_COLUMN_KEYS);
   const [visibleSearchFieldKeys, setVisibleSearchFieldKeys] = useState<string[]>(ALL_SEARCH_FIELD_KEYS);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [scenarioListModalOpen, setScenarioListModalOpen] = useState(false);
   const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
   const [editName, setEditName] = useState('');
   const [editFieldKeys, setEditFieldKeys] = useState<string[]>([]);
@@ -371,7 +383,7 @@ const Component = forwardRef(function KanbanBoard(
       message.success(`场景"${editName.trim()}"已更新`);
     } else {
       const s: Scenario = {
-        id: `scenario_${scenarioIdCounter++}`,
+        id: getNextScenarioId(),
         name: editName.trim(),
         searchValues: newSearchValues,
         visibleColumnKeys: newColKeys,
@@ -605,42 +617,6 @@ const Component = forwardRef(function KanbanBoard(
       </div>
 
       <div className="page-body">
-        {/* 场景 Tab 栏 */}
-        <div className="scenario-tab-bar">
-          <div className="scenario-tabs">
-            <span
-              className={`scenario-tab ${activeScenarioId === '__default__' ? 'active' : ''}`}
-              onClick={() => handleTabClick('__default__')}
-            >
-              全部订单
-            </span>
-            {scenarios.map(s => (
-              <span
-                key={s.id}
-                className={`scenario-tab ${activeScenarioId === s.id ? 'active' : ''}`}
-                onClick={() => handleTabClick(s.id)}
-              >
-                {s.name}
-              </span>
-            ))}
-            <span className="scenario-tab-btn" onClick={() => openEditScenario(null)}>
-              + 新建场景
-            </span>
-          </div>
-          <div className="scenario-actions">
-            {activeScenarioId !== '__default__' && (
-              <Button
-                type="link"
-                className="edit-scenario-btn"
-                icon={<SettingOutlined />}
-                onClick={() => openEditScenario(activeScenario)}
-              >
-                编辑当前场景
-              </Button>
-            )}
-          </div>
-        </div>
-
         {/* 搜索区域 */}
         <div className="query-bar">
           <div className="filter-row" style={{ maxHeight: expanded ? 'none' : '110px', overflow: 'hidden', position: 'relative' }}>
@@ -752,6 +728,23 @@ const Component = forwardRef(function KanbanBoard(
         {/* 工具栏 */}
         <div className="toolbar">
           <div className="toolbar-left">
+            <div className="scenario-select-group">
+              <Select
+                value={activeScenarioId}
+                onChange={handleTabClick}
+                style={{ width: 160 }}
+                size="small"
+                options={[
+                  { value: '__default__', label: '全部订单' },
+                  ...scenarios.map(s => ({ value: s.id, label: s.name })),
+                ]}
+              />
+              <SettingOutlined
+                className="scenario-edit-icon"
+                onClick={() => setScenarioListModalOpen(true)}
+              />
+            </div>
+            <div className="toolbar-divider" />
             <Button size="small" type="primary">批量审核</Button>
             <Button size="small" type="primary">撤销审核</Button>
             <Button size="small" type="primary">批量修改额外服务</Button>
@@ -760,9 +753,6 @@ const Component = forwardRef(function KanbanBoard(
             <Button size="small" type="primary">拦截</Button>
             <Button size="small" type="primary">取消拦截</Button>
             <Button size="small" type="primary">删除</Button>
-            {activeScenario && (
-              <span className="active-scenario-label">当前场景: {activeScenario.name}</span>
-            )}
           </div>
           <div className="toolbar-right">
             <Button size="small" type="primary" icon={<SearchOutlined />}>查询</Button>
@@ -799,6 +789,70 @@ const Component = forwardRef(function KanbanBoard(
           />
         </div>
       </div>
+
+      {/* 场景列表弹框 */}
+      <Modal
+        title="场景管理"
+        open={scenarioListModalOpen}
+        onCancel={() => setScenarioListModalOpen(false)}
+        footer={null}
+        width={480}
+      >
+        <div className="scenario-list-modal">
+          <div
+            className="scenario-list-item new-scenario-item"
+            onClick={() => {
+              setScenarioListModalOpen(false);
+              openEditScenario(null);
+            }}
+          >
+            <PlusOutlined style={{ fontSize: 14, color: '#1D4CD2' }} />
+            <span>新建场景</span>
+          </div>
+          {scenarios.length === 0 && (
+            <div className="scenario-list-empty">暂无场景，点击上方按钮创建</div>
+          )}
+          {scenarios.map(s => (
+            <div key={s.id} className="scenario-list-item">
+              <div
+                className="scenario-list-item-body"
+                onClick={() => {
+                  setScenarioListModalOpen(false);
+                  openEditScenario(s);
+                }}
+              >
+                <div className="scenario-list-item-name">
+                  {activeScenarioId === s.id && <span className="scenario-active-dot" />}
+                  {s.name}
+                </div>
+                <div className="scenario-list-item-meta">搜索字段 {s.visibleSearchFieldKeys.length} 项 · 显示列 {s.visibleColumnKeys.length} 项</div>
+              </div>
+              <div className="scenario-list-item-actions">
+                <Button
+                  type="link"
+                  size="small"
+                  danger
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    Modal.confirm({
+                      title: '确认删除场景',
+                      content: `确定要删除场景"${s.name}"吗？`,
+                      okText: '删除',
+                      okType: 'danger',
+                      cancelText: '取消',
+                      onOk: () => {
+                        deleteScenario(s.id);
+                      },
+                    });
+                  }}
+                >
+                  删除
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
 
       {/* 编辑场景弹框 */}
       <Modal
