@@ -13,7 +13,7 @@ import React, { useState, useCallback, useRef, useImperativeHandle, forwardRef }
 import './style.css';
 import {
   Table, Button, Input, Select, DatePicker, Modal,
-  Breadcrumb, message,
+  Breadcrumb, message, Popover,
 } from 'antd';
 import {
   SearchOutlined, DownOutlined,
@@ -237,6 +237,7 @@ const Component = forwardRef(function KanbanBoard(
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [scenarioListModalOpen, setScenarioListModalOpen] = useState(false);
   const [editingScenario, setEditingScenario] = useState<Scenario | null>(null);
+  const [scenarioTriggerHover, setScenarioTriggerHover] = useState(false);
   const [editName, setEditName] = useState('');
   const [editFieldKeys, setEditFieldKeys] = useState<string[]>([]);
   const [editSearchValues, setEditSearchValues] = useState<ScenarioSearchValues>({
@@ -728,23 +729,6 @@ const Component = forwardRef(function KanbanBoard(
         {/* 工具栏 */}
         <div className="toolbar">
           <div className="toolbar-left">
-            <div className="scenario-select-group">
-              <Select
-                value={activeScenarioId}
-                onChange={handleTabClick}
-                style={{ width: 160 }}
-                size="small"
-                options={[
-                  { value: '__default__', label: '全部订单' },
-                  ...scenarios.map(s => ({ value: s.id, label: s.name })),
-                ]}
-              />
-              <SettingOutlined
-                className="scenario-edit-icon"
-                onClick={() => setScenarioListModalOpen(true)}
-              />
-            </div>
-            <div className="toolbar-divider" />
             <Button size="small" type="primary">批量审核</Button>
             <Button size="small" type="primary">撤销审核</Button>
             <Button size="small" type="primary">批量修改额外服务</Button>
@@ -759,6 +743,61 @@ const Component = forwardRef(function KanbanBoard(
             <Button size="small" onClick={resetSearch}>重置</Button>
           </div>
         </div>
+
+        {/* 场景触发圆点 */}
+        <Popover
+          trigger="hover"
+          placement="leftTop"
+          overlayClassName="scenario-hover-panel"
+          mouseEnterDelay={0.2}
+          mouseLeaveDelay={0.1}
+          onOpenChange={(visible) => setScenarioTriggerHover(visible)}
+          content={(
+            <div className="scenario-panel">
+              <div className="scenario-panel-list">
+                <div
+                  className={`scenario-panel-item ${activeScenarioId === '__default__' ? 'active' : ''}`}
+                  onClick={() => {
+                    setScenarioTriggerHover(false);
+                    handleTabClick('__default__');
+                  }}
+                >
+                  <span className={`scenario-panel-dot ${activeScenarioId === '__default__' ? 'fill' : ''}`} />
+                  全部订单
+                </div>
+                {scenarios.map(s => (
+                  <div
+                    key={s.id}
+                    className={`scenario-panel-item ${activeScenarioId === s.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setScenarioTriggerHover(false);
+                      handleTabClick(s.id);
+                    }}
+                  >
+                    <span className={`scenario-panel-dot ${activeScenarioId === s.id ? 'fill' : ''}`} />
+                    {s.name}
+                  </div>
+                ))}
+              </div>
+              <div className="scenario-panel-actions">
+                <Button
+                  size="small"
+                  block
+                  onClick={() => {
+                    setScenarioTriggerHover(false);
+                    setScenarioListModalOpen(true);
+                  }}
+                >
+                  管理场景
+                </Button>
+              </div>
+            </div>
+          )}
+        >
+          <div className={`scenario-trigger-dot ${scenarioTriggerHover ? 'hover' : ''}`}>
+            <SettingOutlined />
+          </div>
+        </Popover>
 
         {/* 表格 */}
         <div className="table-wrapper-custom">
